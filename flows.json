@@ -701,7 +701,7 @@
         "secure": true,
         "tls": true,
         "name": "pndung23@clc.fitus.edu.vn",
-        "dname": "Send tempẻature email",
+        "dname": "Send temperature email",
         "x": 470,
         "y": 1260,
         "wires": []
