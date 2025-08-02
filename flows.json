@@ -1,0 +1,980 @@
+[
+    {
+        "id": "bbaae1db6d3d10cd",
+        "type": "tab",
+        "label": "Smart Irrigation UI",
+        "disabled": false,
+        "info": "Hệ thống chăm sóc cây thông minh iTree"
+    },
+    {
+        "id": "8adb8a0c24093ea0",
+        "type": "ui_form",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Login Form",
+        "label": "",
+        "group": "2b2d338d9f30ab22",
+        "order": 1,
+        "width": 6,
+        "height": 4,
+        "options": [
+            {
+                "label": "Email",
+                "value": "email",
+                "type": "email",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Username",
+                "value": "username",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Password",
+                "value": "password",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "email": "",
+            "username": "",
+            "password": ""
+        },
+        "submit": "Đăng nhập",
+        "cancel": "",
+        "topic": "login",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 200,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "54a442a5d9554b47",
+        "type": "ui_switch",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Bật/tắt gửi email",
+        "label": "Gửi thông báo qua Email",
+        "tooltip": "",
+        "group": "83b22cea40991d65",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "email_notify",
+        "topicType": "str",
+        "onvalue": "ON",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "OFF",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": true,
+        "className": "",
+        "x": 120,
+        "y": 1180,
+        "wires": [
+            [
+                "afe8bfa4148c8d7c"
+            ]
+        ]
+    },
+    {
+        "id": "5ac6c00ca31cb89e",
+        "type": "ui_gauge",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Nhiệt độ",
+        "group": "4af142fc2271e75e",
+        "order": 1,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "",
+        "label": "Nhiệt độ",
+        "format": "{{value}} °C",
+        "min": 0,
+        "max": 50,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 200,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "8d82255c88b0131b",
+        "type": "ui_gauge",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Độ ẩm",
+        "group": "89a06004a041e750",
+        "order": 1,
+        "width": 6,
+        "height": 4,
+        "gtype": "wave",
+        "title": "",
+        "label": "%",
+        "format": "{{value}} %",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 200,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "d92d87f16e5a3f5c",
+        "type": "ui_switch",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Tự động/Thủ công",
+        "label": "Tự động",
+        "tooltip": "",
+        "group": "1d2eb9851173c727",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "mode",
+        "topicType": "str",
+        "onvalue": "auto",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "manual",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "",
+        "animate": true,
+        "className": "",
+        "x": 190,
+        "y": 820,
+        "wires": [
+            [
+                "fbe93e91582a9be1",
+                "b31ab048377f74ac"
+            ]
+        ]
+    },
+    {
+        "id": "4660bd78cd03690d",
+        "type": "ui_button",
+        "z": "bbaae1db6d3d10cd",
+        "name": "pump_manual",
+        "group": "1d2eb9851173c727",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "Tưới ngay",
+        "tooltip": "Nhấn để tưới nước thủ công",
+        "color": "white",
+        "bgcolor": "green",
+        "className": "",
+        "icon": "fa-play",
+        "payload": "ON",
+        "payloadType": "str",
+        "topic": "pump_manual",
+        "topicType": "str",
+        "x": 180,
+        "y": 1120,
+        "wires": [
+            [
+                "7df82ca30fd8aee2"
+            ]
+        ]
+    },
+    {
+        "id": "703787dcd3a8185c",
+        "type": "ui_slider",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Cường độ đèn",
+        "label": "Độ sáng",
+        "tooltip": "{{value}}",
+        "group": "1dd841083e538fcb",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "outs": "all",
+        "topic": "light_level",
+        "topicType": "str",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "className": "",
+        "x": 860,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b244c90ea27fd291",
+        "type": "ui_button",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Bật/Tắt đèn",
+        "group": "1dd841083e538fcb",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "label": "{{label_light}}",
+        "tooltip": "Nhấn để bật hoặc tắt đèn",
+        "color": "white",
+        "bgcolor": "#337ab7",
+        "className": "",
+        "icon": "fa-lightbulb-o",
+        "payload": "toggle",
+        "payloadType": "str",
+        "topic": "light_toggle",
+        "topicType": "str",
+        "x": 130,
+        "y": 540,
+        "wires": [
+            [
+                "651326fd9d312a66",
+                "24968b6fbc7b0c9d"
+            ]
+        ]
+    },
+    {
+        "id": "eb618a0e705e2c44",
+        "type": "ui_text",
+        "z": "bbaae1db6d3d10cd",
+        "group": "1dd841083e538fcb",
+        "order": 3,
+        "width": 6,
+        "height": 1,
+        "name": "Trạng thái đèn",
+        "label": "Trạng thái đèn:",
+        "format": "{{msg.payload}}",
+        "layout": "",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 880,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "8e68c3a8f45c565c",
+        "type": "ui_text",
+        "z": "bbaae1db6d3d10cd",
+        "group": "83b22cea40991d65",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "name": "Thông báo cảnh báo",
+        "label": "Thông báo:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 680,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "1d024fe4e6f20d34",
+        "type": "ui_chart",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Biểu đồ lịch sử",
+        "group": "c4fc82bed36ffa3d",
+        "order": 1,
+        "width": 12,
+        "height": 5,
+        "label": "Lịch sử độ ẩm và nhiệt độ",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Đang tải dữ liệu...",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "",
+        "removeOlderPoints": "",
+        "cutout": "",
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 180,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a62a97d91a2eed51",
+        "type": "ui_form",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Chọn ngày truy vấn",
+        "label": "Chọn ngày xem dữ liệu",
+        "group": "134e30c886f77fdc",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "options": [
+            {
+                "label": "Ngày",
+                "value": "date",
+                "type": "date",
+                "required": false,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "date": ""
+        },
+        "submit": "Xem dữ liệu",
+        "cancel": "",
+        "topic": "history_query",
+        "topicType": "str",
+        "splitLayout": false,
+        "className": "",
+        "x": 250,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "651326fd9d312a66",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Thay đổi bật/tắt đèn",
+        "func": "let ledState = flow.get(\"ledState\");\nif (msg.payload == \"toggle\")\n    ledState = !ledState;\nflow.set(\"ledState\", ledState);\n\nif (ledState == true)\n    msg.payload = \"Đã bật đèn\";\nelse\n    msg.payload = \"Đã tắt đèn\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 540,
+        "wires": [
+            [
+                "a0fd103ddf409c74",
+                "8e68c3a8f45c565c"
+            ]
+        ]
+    },
+    {
+        "id": "f9457eb2c611f395",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Biến global",
+        "func": "flow.set(\"ledState\", false);\nflow.set(\"sendEmail\", false);\nflow.set(\"logs\", []);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "24968b6fbc7b0c9d",
+        "type": "mqtt out",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127003/led",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "8195d7a4b94bdd16",
+        "x": 360,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "0a945f3fba55b17d",
+        "type": "mqtt in",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127003/led",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8195d7a4b94bdd16",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 680,
+        "wires": [
+            [
+                "b4d2a783e827315f"
+            ]
+        ]
+    },
+    {
+        "id": "b4d2a783e827315f",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Đổi true/false",
+        "func": "if (msg.payload === \"True\")\n{\n    msg.payload = \"Đã bật đèn\";\n    flow.set(\"ledState\", true);\n}\nelse \n{\n    msg.payload = \"Đã tắt đèn\";\n    flow.set(\"ledState\", false);\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 680,
+        "wires": [
+            [
+                "a0fd103ddf409c74",
+                "8e68c3a8f45c565c"
+            ]
+        ]
+    },
+    {
+        "id": "a0fd103ddf409c74",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Bật/tắt => 0/100",
+        "func": "let ledState = flow.get(\"ledState\");\nif (ledState == true)\n    msg.payload = 100;\nelse\n    msg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 540,
+        "wires": [
+            [
+                "703787dcd3a8185c",
+                "4adb3517ada067ed"
+            ]
+        ]
+    },
+    {
+        "id": "fbe93e91582a9be1",
+        "type": "ui_slider",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "label": "Mức nước",
+        "tooltip": "{{value}}",
+        "group": "1d2eb9851173c727",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "all",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": 0,
+        "max": "100",
+        "step": 1,
+        "className": "",
+        "x": 390,
+        "y": 820,
+        "wires": [
+            [
+                "f523bd11c3147b22"
+            ]
+        ]
+    },
+    {
+        "id": "b31ab048377f74ac",
+        "type": "ui_slider",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "label": "Thời gian tưới (s)",
+        "tooltip": "{{value}}",
+        "group": "1d2eb9851173c727",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "all",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": 0,
+        "max": "60",
+        "step": 1,
+        "className": "",
+        "x": 390,
+        "y": 920,
+        "wires": [
+            [
+                "9a6e70e6d4b267f5"
+            ]
+        ]
+    },
+    {
+        "id": "4adb3517ada067ed",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "On/off",
+        "func": "if (msg.payload == 0)\n    msg.payload = \"OFF\";\nelse\n    msg.payload = \"ON\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 640,
+        "wires": [
+            [
+                "eb618a0e705e2c44"
+            ]
+        ]
+    },
+    {
+        "id": "52f01f1fb2ab6bd4",
+        "type": "mqtt out",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127003/pump",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "8195d7a4b94bdd16",
+        "x": 670,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "f523bd11c3147b22",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Set Water Level",
+        "func": "flow.set(\"water_level\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9a6e70e6d4b267f5",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Set Water Time",
+        "func": "flow.set(\"water_time\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7df82ca30fd8aee2",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Pass water level and time to mqtt",
+        "func": "let water_level = flow.get(\"water_level\");\nlet water_time = flow.get(\"water_time\");\nmsg.payload = String(water_level) + \"_\" + String(water_time);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 1120,
+        "wires": [
+            [
+                "52f01f1fb2ab6bd4"
+            ]
+        ]
+    },
+    {
+        "id": "623e3549d7c1f59e",
+        "type": "mqtt in",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127003/pump",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8195d7a4b94bdd16",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 760,
+        "wires": [
+            [
+                "bf539520e20ef7c6"
+            ]
+        ]
+    },
+    {
+        "id": "bf539520e20ef7c6",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Pump on message",
+        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã bật máy bơm\";\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tắt máy bơm\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 760,
+        "wires": [
+            [
+                "8e68c3a8f45c565c"
+            ]
+        ]
+    },
+    {
+        "id": "6eee42d023e417ba",
+        "type": "e-mail",
+        "z": "bbaae1db6d3d10cd",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "pndung23@clc.fitus.edu.vn",
+        "dname": "Send tempẻature email",
+        "x": 470,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "afe8bfa4148c8d7c",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "On/off send email",
+        "func": "if (msg.payload == \"ON\")\n{\n    flow.set(\"sendEmail\", true);\n}\nelse\n{\n    flow.set(\"sendEmail\", false);\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 1180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e145b6fd17e63934",
+        "type": "e-mail",
+        "z": "bbaae1db6d3d10cd",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": true,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "pndung23@clc.fitus.edu.vn",
+        "dname": "Send humid email",
+        "x": 450,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "650664786a0bd731",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Check off range temp",
+        "func": "let temp = msg.payload;\nlet upper = 40;\nlet lower = 10;\nif (temp < lower || temp > upper)\n{\n    let sendEmail = flow.get(\"sendEmail\");\n    if (sendEmail == true)\n    {\n        msg.topic = \"Cảnh báo! Nhiệt độ ngoài khoảng an toàn\";\n        msg.payload = \"Nhiệt độ hiện tại đang nằm ngoài ngưỡng cho phép: \" + temp;\n    }\n    return msg;\n}\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 1260,
+        "wires": [
+            [
+                "6eee42d023e417ba"
+            ]
+        ]
+    },
+    {
+        "id": "ca930fe4bcbe13c9",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Check off range humid",
+        "func": "let humid = msg.payload;\nlet upper = 100;\nlet lower = 10;\nif (humid < lower || humid > upper) \n{\n    let sendEmail = flow.get(\"sendEmail\");\n    if (sendEmail == true) \n    {\n        msg.topic = \"Cảnh báo! Độ ẩm dưới ngưỡng an toàn\";\n        msg.payload = \"Độ ẩm hiện tại đang nằm dưới ngưỡng cho phép: \" + humid + \"%\";\n    }\n    return msg;\n}\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 1320,
+        "wires": [
+            [
+                "e145b6fd17e63934"
+            ]
+        ]
+    },
+    {
+        "id": "de65a745f395ce73",
+        "type": "http in",
+        "z": "bbaae1db6d3d10cd",
+        "name": "get_autowater_command",
+        "url": "http://localhost:5000/predict",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 490,
+        "y": 100,
+        "wires": [
+            [
+                "691b988619622cee"
+            ]
+        ]
+    },
+    {
+        "id": "994d3136548e11c9",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Command string",
+        "func": "let water_level = msg.payload.water_level;\nlet water_time = msg.payload.water_time;\nmsg.payload = String(water_level) + \"_\" + String(water_time);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 280,
+        "wires": [
+            [
+                "92a2efa75cec7430"
+            ]
+        ]
+    },
+    {
+        "id": "691b988619622cee",
+        "type": "json",
+        "z": "bbaae1db6d3d10cd",
+        "name": "command_parser",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 470,
+        "y": 200,
+        "wires": [
+            [
+                "994d3136548e11c9"
+            ]
+        ]
+    },
+    {
+        "id": "92a2efa75cec7430",
+        "type": "mqtt out",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127003/autowater",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "8195d7a4b94bdd16",
+        "x": 680,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "2b2d338d9f30ab22",
+        "type": "ui_group",
+        "name": "Đăng nhập",
+        "tab": "e94f883330d75ad9",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "83b22cea40991d65",
+        "type": "ui_group",
+        "name": "Thông báo",
+        "tab": "11effbb23dfb879c",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "4af142fc2271e75e",
+        "type": "ui_group",
+        "name": "Nhiệt độ",
+        "tab": "11effbb23dfb879c",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "89a06004a041e750",
+        "type": "ui_group",
+        "name": "Độ ẩm",
+        "tab": "11effbb23dfb879c",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "1d2eb9851173c727",
+        "type": "ui_group",
+        "name": "Tưới nước",
+        "tab": "11effbb23dfb879c",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "1dd841083e538fcb",
+        "type": "ui_group",
+        "name": "Chiếu sáng",
+        "tab": "11effbb23dfb879c",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "c4fc82bed36ffa3d",
+        "type": "ui_group",
+        "name": "Lịch sử",
+        "tab": "11effbb23dfb879c",
+        "order": 5,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "134e30c886f77fdc",
+        "type": "ui_group",
+        "name": "Truy vấn lịch sử",
+        "tab": "11effbb23dfb879c",
+        "order": 6,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "8195d7a4b94bdd16",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "broker.hivemq.com",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "e94f883330d75ad9",
+        "type": "ui_tab",
+        "name": "Login",
+        "order": 1
+    },
+    {
+        "id": "11effbb23dfb879c",
+        "type": "ui_tab",
+        "name": "Hệ thống chăm sóc cây thông minh iTree",
+        "icon": "dashboard",
+        "order": 2
+    }
+]
