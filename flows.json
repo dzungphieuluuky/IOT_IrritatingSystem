@@ -50,8 +50,8 @@
         "topicType": "str",
         "splitLayout": false,
         "className": "",
-        "x": 200,
-        "y": 100,
+        "x": 210,
+        "y": 140,
         "wires": [
             []
         ]
@@ -174,8 +174,8 @@
         "y": 820,
         "wires": [
             [
-                "fbe93e91582a9be1",
-                "b31ab048377f74ac"
+                "b31ab048377f74ac",
+                "eb8c20cd523ca971"
             ]
         ]
     },
@@ -185,7 +185,7 @@
         "z": "bbaae1db6d3d10cd",
         "name": "pump_manual",
         "group": "1d2eb9851173c727",
-        "order": 2,
+        "order": 3,
         "width": 6,
         "height": 1,
         "passthru": false,
@@ -199,7 +199,7 @@
         "payloadType": "str",
         "topic": "pump_manual",
         "topicType": "str",
-        "x": 180,
+        "x": 120,
         "y": 1120,
         "wires": [
             [
@@ -278,29 +278,8 @@
         "font": "",
         "fontSize": "",
         "color": "#000000",
-        "x": 880,
-        "y": 640,
-        "wires": []
-    },
-    {
-        "id": "8e68c3a8f45c565c",
-        "type": "ui_text",
-        "z": "bbaae1db6d3d10cd",
-        "group": "83b22cea40991d65",
-        "order": 1,
-        "width": 6,
-        "height": 1,
-        "name": "Thông báo cảnh báo",
-        "label": "Thông báo:",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "className": "",
-        "style": false,
-        "font": "",
-        "fontSize": "",
-        "color": "#000000",
-        "x": 680,
-        "y": 700,
+        "x": 980,
+        "y": 600,
         "wires": []
     },
     {
@@ -310,8 +289,8 @@
         "name": "Biểu đồ lịch sử",
         "group": "c4fc82bed36ffa3d",
         "order": 1,
-        "width": 12,
-        "height": 5,
+        "width": 0,
+        "height": 0,
         "label": "Lịch sử độ ẩm và nhiệt độ",
         "chartType": "line",
         "legend": "true",
@@ -385,7 +364,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Thay đổi bật/tắt đèn",
-        "func": "let ledState = flow.get(\"ledState\");\nif (msg.payload == \"toggle\")\n    ledState = !ledState;\nflow.set(\"ledState\", ledState);\n\nif (ledState == true)\n    msg.payload = \"Đã bật đèn\";\nelse\n    msg.payload = \"Đã tắt đèn\";\nreturn msg;",
+        "func": "let ledState = flow.get(\"ledState\");\nif (msg.payload == \"toggle\")\n    ledState = !ledState;\nflow.set(\"ledState\", ledState);\n\nif (ledState == true)\n    msg.payload = \"Bật đèn từ Dashboard\";\nelse\n    msg.payload = \"Tắt đèn từ Dashboard\";\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -397,7 +376,7 @@
         "wires": [
             [
                 "a0fd103ddf409c74",
-                "8e68c3a8f45c565c"
+                "6dfeb6e8db219bbe"
             ]
         ]
     },
@@ -406,7 +385,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Biến global",
-        "func": "flow.set(\"ledState\", false);\nflow.set(\"sendEmail\", false);\nflow.set(\"logs\", []);\nreturn msg;",
+        "func": "flow.set(\"ledState\", false);\nflow.set(\"sendEmail\", false);\nflow.set(\"logs\", []);\nflow.set(\"autowater\", false);\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -424,7 +403,7 @@
         "type": "mqtt out",
         "z": "bbaae1db6d3d10cd",
         "name": "",
-        "topic": "/23127003/led",
+        "topic": "/23127003/led_dashboard",
         "qos": "2",
         "retain": "",
         "respTopic": "",
@@ -433,7 +412,7 @@
         "correl": "",
         "expiry": "",
         "broker": "8195d7a4b94bdd16",
-        "x": 360,
+        "x": 350,
         "y": 600,
         "wires": []
     },
@@ -442,7 +421,7 @@
         "type": "mqtt in",
         "z": "bbaae1db6d3d10cd",
         "name": "",
-        "topic": "/23127003/led",
+        "topic": "/23127003/led_wokwi",
         "qos": "2",
         "datatype": "auto-detect",
         "broker": "8195d7a4b94bdd16",
@@ -450,7 +429,7 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 150,
+        "x": 140,
         "y": 680,
         "wires": [
             [
@@ -475,7 +454,7 @@
         "wires": [
             [
                 "a0fd103ddf409c74",
-                "8e68c3a8f45c565c"
+                "6dfeb6e8db219bbe"
             ]
         ]
     },
@@ -501,33 +480,6 @@
         ]
     },
     {
-        "id": "fbe93e91582a9be1",
-        "type": "ui_slider",
-        "z": "bbaae1db6d3d10cd",
-        "name": "",
-        "label": "Mức nước",
-        "tooltip": "{{value}}",
-        "group": "1d2eb9851173c727",
-        "order": 3,
-        "width": 0,
-        "height": 0,
-        "passthru": true,
-        "outs": "all",
-        "topic": "topic",
-        "topicType": "msg",
-        "min": 0,
-        "max": "100",
-        "step": 1,
-        "className": "",
-        "x": 390,
-        "y": 820,
-        "wires": [
-            [
-                "f523bd11c3147b22"
-            ]
-        ]
-    },
-    {
         "id": "b31ab048377f74ac",
         "type": "ui_slider",
         "z": "bbaae1db6d3d10cd",
@@ -535,7 +487,7 @@
         "label": "Thời gian tưới (s)",
         "tooltip": "{{value}}",
         "group": "1d2eb9851173c727",
-        "order": 4,
+        "order": 2,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -546,8 +498,8 @@
         "max": "60",
         "step": 1,
         "className": "",
-        "x": 390,
-        "y": 920,
+        "x": 430,
+        "y": 820,
         "wires": [
             [
                 "9a6e70e6d4b267f5"
@@ -566,8 +518,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 710,
-        "y": 640,
+        "x": 810,
+        "y": 600,
         "wires": [
             [
                 "eb618a0e705e2c44"
@@ -593,24 +545,6 @@
         "wires": []
     },
     {
-        "id": "f523bd11c3147b22",
-        "type": "function",
-        "z": "bbaae1db6d3d10cd",
-        "name": "Set Water Level",
-        "func": "flow.set(\"water_level\", msg.payload);\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 620,
-        "y": 820,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "9a6e70e6d4b267f5",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
@@ -622,8 +556,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 620,
-        "y": 920,
+        "x": 660,
+        "y": 820,
         "wires": [
             []
         ]
@@ -633,14 +567,14 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Pass water level and time to mqtt",
-        "func": "let water_level = flow.get(\"water_level\");\nlet water_time = flow.get(\"water_time\");\nmsg.payload = String(water_level) + \"_\" + String(water_time);\nreturn msg;",
+        "func": "let water_time = flow.get(\"water_time\");\nmsg.payload = \"ON\" + \"_\" + String(water_time);\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 420,
+        "x": 400,
         "y": 1120,
         "wires": [
             [
@@ -674,7 +608,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Pump on message",
-        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã bật máy bơm\";\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tắt máy bơm\";\n}\nreturn msg;",
+        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã bật máy bơm\";\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tắt máy bơm\";\n}\nelse\n{\n    msg.payload = \"Bật máy bơm từ Dashboard\"\n}\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -685,7 +619,7 @@
         "y": 760,
         "wires": [
             [
-                "8e68c3a8f45c565c"
+                "6dfeb6e8db219bbe"
             ]
         ]
     },
@@ -782,23 +716,6 @@
         ]
     },
     {
-        "id": "de65a745f395ce73",
-        "type": "http in",
-        "z": "bbaae1db6d3d10cd",
-        "name": "get_autowater_command",
-        "url": "http://localhost:5000/predict",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 490,
-        "y": 100,
-        "wires": [
-            [
-                "691b988619622cee"
-            ]
-        ]
-    },
-    {
         "id": "994d3136548e11c9",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
@@ -810,8 +727,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 460,
-        "y": 280,
+        "x": 580,
+        "y": 1060,
         "wires": [
             [
                 "92a2efa75cec7430"
@@ -826,8 +743,8 @@
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 470,
-        "y": 200,
+        "x": 370,
+        "y": 1060,
         "wires": [
             [
                 "994d3136548e11c9"
@@ -848,9 +765,92 @@
         "correl": "",
         "expiry": "",
         "broker": "8195d7a4b94bdd16",
-        "x": 680,
-        "y": 280,
+        "x": 800,
+        "y": 1060,
         "wires": []
+    },
+    {
+        "id": "c179bb95179293e6",
+        "type": "http request",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Get water level and time",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:5000/predict",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 130,
+        "y": 1060,
+        "wires": [
+            [
+                "691b988619622cee"
+            ]
+        ]
+    },
+    {
+        "id": "eb8c20cd523ca971",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Set autowater",
+        "func": "if (msg.payload == \"auto\")\n{\n    flow.set(\"autowater\", true);\n}\nelse\n{\n    flow.set(\"autowater\", false);\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 900,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6dfeb6e8db219bbe",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Store 5 recent msg",
+        "func": "let history = flow.get(\"logs\") || [];\nlet now = new Date().toLocaleTimeString(\"vi-VN\", { hour: '2-digit', minute: '2-digit' });\nlet newMsg = `🕒 ${now} - ${msg.payload}`;\nhistory.unshift(newMsg);\nhistory = history.slice(0, 5);\nflow.set(\"logs\", history);\nmsg.payload = history;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 680,
+        "wires": [
+            [
+                "ede157d4f7aee52c"
+            ]
+        ]
+    },
+    {
+        "id": "ede157d4f7aee52c",
+        "type": "ui_template",
+        "z": "bbaae1db6d3d10cd",
+        "group": "83b22cea40991d65",
+        "name": "Thông báo/cảnh báo",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<md-card style=\"\n  padding: 10px;\n  background-color: #f9f9f9;\n  border-left: 5px solid #4CAF50;\n  max-height: 160px;\n  overflow-y: auto;\n  box-sizing: border-box;\n\">\n  <md-card-content style=\"margin-top: -5px; padding-bottom: 20px;\">\n    <ul style=\"list-style: none; padding-left: 0; margin: 0;\">\n      <li ng-repeat=\"item in msg.payload track by $index\" style=\"padding: 8px 0; border-bottom: 1px solid #ddd;\">\n        <span style=\"font-size: 15px; font-weight: bold;\">🔔 {{item}}</span>\n      </li>\n    </ul>\n  </md-card-content>\n</md-card>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 920,
+        "y": 680,
+        "wires": [
+            []
+        ]
     },
     {
         "id": "2b2d338d9f30ab22",
