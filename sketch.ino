@@ -84,7 +84,7 @@ void callback(char* topic, byte* message, unsigned int length) {
   }
 
   // tưới nước theo mức nước và thời gian tuỳ chỉnh
-  if (topic_string == "/23127003/pump" and msg.length() > 0)
+  else if (topic_string == "/23127003/pump" and msg.length() > 0)
   {
     int sepIndex = msg.indexOf('_');
     if (sepIndex != -1) 
@@ -142,6 +142,11 @@ void loop() {
   {
     ledState = !ledState;
     digitalWrite(led, ledState);
+    
+    char led_state_message[] = "False";
+    if (ledState == true)
+      strcpy(led_state_message, "True");
+    mqttClient.publish("/23127003/led", led_state_message);
   }
   lastButtonState = buttonState;
 
