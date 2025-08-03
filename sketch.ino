@@ -18,7 +18,6 @@ bool ledState = false;
 bool lastButtonState = false;
 unsigned long start_water = 0;
 unsigned long end_water = 0;
-unsigned int water_level = 0;
 unsigned int water_time = 0;
 
 // pin port
@@ -43,7 +42,7 @@ void mqttConnect() {
       Serial.println("connected");
 
       //***Subscribe all topic you need***
-      mqttClient.subscribe("/23127003/led");
+      mqttClient.subscribe("/23127003/led_dashboard");
       mqttClient.subscribe("/23127003/pump");
       mqttClient.subscribe("/23127003/autowater");
      
@@ -71,7 +70,7 @@ void callback(char* topic, byte* message, unsigned int length) {
 
   //***Code here to process the received package***
   // bật tắt đèn từ xa
-  if (topic_string == "/23127003/led" and msg == "toggle")
+  if (topic_string == "/23127003/led_dashboard" and msg == "toggle")
   {
     ledState = !ledState;
     digitalWrite(led, ledState);
@@ -80,7 +79,7 @@ void callback(char* topic, byte* message, unsigned int length) {
     char led_state_message[] = "False";
     if (ledState == true)
       strcpy(led_state_message, "True");
-    mqttClient.publish("/23127003/led", led_state_message);
+    mqttClient.publish("/23127003/led_wokwi", led_state_message);
   }
 
   // tưới nước theo mức nước và thời gian tuỳ chỉnh
@@ -89,15 +88,11 @@ void callback(char* topic, byte* message, unsigned int length) {
     int sepIndex = msg.indexOf('_');
     if (sepIndex != -1) 
     {
-      String levelStr = msg.substring(0, sepIndex);
       String timeStr = msg.substring(sepIndex + 1);
-
-      water_level = levelStr.toInt();
       water_time = timeStr.toInt();
 
-      analogWrite(pump, water_level*255/100);
-      char pump_on_buffer[] = "ON";
-      mqttClient.publish("/23127003/pump", pump_on_buffer);
+      digitalWrite(pump, HIGH);
+      mqttClient.publish("/23127003/pump", "ON");
       start_water = millis();
       end_water = start_water + water_time * 1000;
     }
@@ -146,15 +141,14 @@ void loop() {
     char led_state_message[] = "False";
     if (ledState == true)
       strcpy(led_state_message, "True");
-    mqttClient.publish("/23127003/led", led_state_message);
+    mqttClient.publish("/23127003/led_wokwi", led_state_message);
   }
   lastButtonState = buttonState;
 
   if (millis() >= end_water and end_water > 0)
   {
-    analogWrite(pump, 0);
-    char pump_off_buffer[] = "OFF";
-    mqttClient.publish("/23127003/pump", pump_off_buffer);
+    digitalWrite(pump, LOW);
+    mqttClient.publish("/23127003/pump", "OFF");
     start_water = 0;
     end_water = 0;
   }
