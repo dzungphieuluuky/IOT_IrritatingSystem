@@ -22,8 +22,10 @@ unsigned int water_time = 0;
 
 // pin port
 const int led = 2;
+const int led2 = 4;
 const int button = 14;
 const int pump = 5;
+const int LDR = 33;
 
 void wifiConnect() {
   WiFi.begin(ssid, password);
@@ -45,7 +47,7 @@ void mqttConnect() {
       mqttClient.subscribe("/23127003/led_dashboard");
       mqttClient.subscribe("/23127003/pump");
       mqttClient.subscribe("/23127003/autowater");
-     
+      mqttClient.subscribe("/23127005/led2");
     }
     else {
       Serial.print(mqttClient.state());
@@ -97,6 +99,15 @@ void callback(char* topic, byte* message, unsigned int length) {
       end_water = start_water + water_time * 1000;
     }
   }
+  else if (topic_string == "/23127005/led2")
+  {
+    if (msg == "ON") {
+      digitalWrite(led2, HIGH);
+    } 
+    else if (msg == "OFF") {
+      digitalWrite(led2, LOW);
+    }
+  }
 }
 
 void setup() {
@@ -109,9 +120,10 @@ void setup() {
   mqttClient.setKeepAlive( 90 );
 
   pinMode(button, INPUT);
-
+  pinMode(LDR, INPUT);
   pinMode(led, OUTPUT);
   pinMode(pump, OUTPUT);
+  pinMode(led2, OUTPUT);
 }
 
 
@@ -152,6 +164,11 @@ void loop() {
     start_water = 0;
     end_water = 0;
   }
+
+  int lightValue = analogRead(LDR);  // đọc từ quang trở (0-4095)
+  char buffer[10];
+  sprintf(buffer, "%d", lightValue);
+  mqttClient.publish("/23127005/LDR", buffer);
 
   delay(500);
 }
