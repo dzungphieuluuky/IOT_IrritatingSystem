@@ -720,7 +720,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Command string",
-        "func": "let water_level = msg.payload.water_level;\nlet water_time = msg.payload.water_time;\nmsg.payload = String(water_level) + \"_\" + String(water_time);\nreturn msg;",
+        "func": "let water_time = msg.payload.water_time;\nmsg.payload = \"ON\" + \"_\" + String(water_time);\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -773,7 +773,7 @@
         "id": "c179bb95179293e6",
         "type": "http request",
         "z": "bbaae1db6d3d10cd",
-        "name": "Get water level and time",
+        "name": "Get water time from model",
         "method": "POST",
         "ret": "obj",
         "paytoqs": "ignore",
@@ -785,7 +785,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 130,
+        "x": 140,
         "y": 1060,
         "wires": [
             [
