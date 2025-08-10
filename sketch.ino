@@ -19,6 +19,7 @@ bool lastButtonState = false;
 unsigned long start_water = 0;
 unsigned long end_water = 0;
 unsigned int water_time = 0;
+bool auto_watering = false;
 
 // pin port
 const int led = 2;
@@ -40,7 +41,7 @@ void mqttConnect() {
   while(!mqttClient.connected()) {
     Serial.println("Attemping MQTT connection...");
     String clientId = "ESP32Client-" + String(random(0xffff), HEX);
-    if(mqttClient.connect(clientId.c_str())) {
+    if (mqttClient.connect(clientId.c_str())) {
       Serial.println("connected");
 
       //***Subscribe all topic you need***
@@ -99,6 +100,8 @@ void callback(char* topic, byte* message, unsigned int length) {
       end_water = start_water + water_time * 1000;
     }
   }
+
+  // bật tắt đèn theo cường đọ ánh sáng
   else if (topic_string == "/23127005/led2")
   {
     if (msg == "ON") {
@@ -106,6 +109,23 @@ void callback(char* topic, byte* message, unsigned int length) {
     } 
     else if (msg == "OFF") {
       digitalWrite(led2, LOW);
+    }
+  }
+
+  // bật máy bơm tự động 
+  else if (topic_string == "/23127003/autowater" and msg.length() > 0)
+  {
+    int sepIndex = msg.indexOf('_');
+    if (sepIndex != -1) 
+    {
+      String timeStr = msg.substring(sepIndex + 1);
+      water_time = timeStr.toInt();
+
+      digitalWrite(pump, HIGH);
+      mqttClient.publish("/23127003/autowater", "ON");
+      auto_watering = true;
+      start_water = millis();
+      end_water = start_water + water_time * 1000;
     }
   }
 }
@@ -160,7 +180,13 @@ void loop() {
   if (millis() >= end_water and end_water > 0)
   {
     digitalWrite(pump, LOW);
-    mqttClient.publish("/23127003/pump", "OFF");
+    if (auto_watering == true)
+    {
+      mqttClient.publish("/23127003/autowater", "OFF");
+      auto_watering = false;
+    }
+    else
+      mqttClient.publish("/23127003/pump", "OFF");
     start_water = 0;
     end_water = 0;
   }
