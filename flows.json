@@ -10,7 +10,7 @@
         "id": "8adb8a0c24093ea0",
         "type": "ui_form",
         "z": "bbaae1db6d3d10cd",
-        "name": "Login Form",
+        "name": "login_form",
         "label": "",
         "group": "2b2d338d9f30ab22",
         "order": 1,
@@ -53,7 +53,9 @@
         "x": 210,
         "y": 140,
         "wires": [
-            []
+            [
+                "b6654d5521f1bdc9"
+            ]
         ]
     },
     {
@@ -81,8 +83,8 @@
         "offcolor": "",
         "animate": true,
         "className": "",
-        "x": 120,
-        "y": 1180,
+        "x": 160,
+        "y": 1340,
         "wires": [
             [
                 "afe8bfa4148c8d7c"
@@ -170,8 +172,8 @@
         "offcolor": "",
         "animate": true,
         "className": "",
-        "x": 190,
-        "y": 820,
+        "x": 130,
+        "y": 1080,
         "wires": [
             [
                 "b31ab048377f74ac",
@@ -200,10 +202,11 @@
         "topic": "pump_manual",
         "topicType": "str",
         "x": 120,
-        "y": 1120,
+        "y": 920,
         "wires": [
             [
-                "7df82ca30fd8aee2"
+                "7df82ca30fd8aee2",
+                "b31ab048377f74ac"
             ]
         ]
     },
@@ -392,8 +395,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 510,
-        "y": 440,
+        "x": 570,
+        "y": 300,
         "wires": [
             []
         ]
@@ -498,8 +501,8 @@
         "max": "60",
         "step": 1,
         "className": "",
-        "x": 430,
-        "y": 820,
+        "x": 410,
+        "y": 1080,
         "wires": [
             [
                 "9a6e70e6d4b267f5"
@@ -541,7 +544,7 @@
         "expiry": "",
         "broker": "8195d7a4b94bdd16",
         "x": 670,
-        "y": 1120,
+        "y": 920,
         "wires": []
     },
     {
@@ -556,8 +559,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 660,
-        "y": 820,
+        "x": 620,
+        "y": 1080,
         "wires": [
             []
         ]
@@ -566,17 +569,20 @@
         "id": "7df82ca30fd8aee2",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
-        "name": "Pass water level and time to mqtt",
-        "func": "let water_time = flow.get(\"water_time\");\nmsg.payload = \"ON\" + \"_\" + String(water_time);\nreturn msg;",
-        "outputs": 1,
+        "name": "Check and pass water time",
+        "func": "let autowater = flow.get(\"autowater\");\nlet informMsg = {};\n\nif (autowater == false)\n{\n    let water_time = flow.get(\"water_time\");\n    msg.payload = \"ON\" + \"_\" + String(water_time);\n    informMsg.payload = \"Đã bật máy bơm từ Dashboard\";\n    return [informMsg, msg];\n}\nelse\n{\n    informMsg.payload = \"Chế độ tự động tưới đang bật!\";\n    return [informMsg, null];\n}",
+        "outputs": 2,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
-        "y": 1120,
+        "x": 380,
+        "y": 920,
         "wires": [
+            [
+                "6dfeb6e8db219bbe"
+            ],
             [
                 "52f01f1fb2ab6bd4"
             ]
@@ -608,7 +614,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Pump on message",
-        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã bật máy bơm\";\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tắt máy bơm\";\n}\nelse\n{\n    msg.payload = \"Bật máy bơm từ Dashboard\"\n}\nreturn msg;",
+        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã bật máy bơm\";\n    return msg;\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tắt máy bơm\";\n    return msg;\n}",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -634,10 +640,10 @@
         "token": "oauth2Response.access_token",
         "secure": true,
         "tls": true,
-        "name": "pndung23@clc.fitus.edu.vn",
+        "name": "",
         "dname": "Send temperature email",
-        "x": 470,
-        "y": 1260,
+        "x": 590,
+        "y": 1400,
         "wires": []
     },
     {
@@ -652,8 +658,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 350,
-        "y": 1180,
+        "x": 390,
+        "y": 1340,
         "wires": [
             []
         ]
@@ -669,10 +675,10 @@
         "token": "oauth2Response.access_token",
         "secure": true,
         "tls": true,
-        "name": "pndung23@clc.fitus.edu.vn",
+        "name": "msg.email",
         "dname": "Send humid email",
-        "x": 450,
-        "y": 1320,
+        "x": 570,
+        "y": 1460,
         "wires": []
     },
     {
@@ -680,15 +686,15 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Check off range temp",
-        "func": "let temp = msg.payload;\nlet upper = 40;\nlet lower = 10;\nif (temp < lower || temp > upper)\n{\n    let sendEmail = flow.get(\"sendEmail\");\n    if (sendEmail == true)\n    {\n        msg.topic = \"Cảnh báo! Nhiệt độ ngoài khoảng an toàn\";\n        msg.payload = \"Nhiệt độ hiện tại đang nằm ngoài ngưỡng cho phép: \" + temp;\n    }\n    return msg;\n}\nreturn null;",
+        "func": "let temp = msg.payload;\nlet upper = 40;\nlet lower = 10;\nlet sendEmail = flow.get(\"sendEmail\");\n\nif ((temp < lower || temp > upper) && sendEmail == true)\n{\n    msg.topic = \"Cảnh báo! Nhiệt độ ngoài khoảng an toàn!\";\n    msg.payload = \"Nhiệt độ hiện tại đang nằm ngoài ngưỡng cho phép: \" + temp + \"°C\";\n    msg.to = flow.get(\"userEmail\");\n    return msg;\n}\nreturn null;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 220,
-        "y": 1260,
+        "x": 340,
+        "y": 1400,
         "wires": [
             [
                 "6eee42d023e417ba"
@@ -700,15 +706,15 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Check off range humid",
-        "func": "let humid = msg.payload;\nlet upper = 100;\nlet lower = 10;\nif (humid < lower || humid > upper) \n{\n    let sendEmail = flow.get(\"sendEmail\");\n    if (sendEmail == true) \n    {\n        msg.topic = \"Cảnh báo! Độ ẩm dưới ngưỡng an toàn\";\n        msg.payload = \"Độ ẩm hiện tại đang nằm dưới ngưỡng cho phép: \" + humid + \"%\";\n    }\n    return msg;\n}\nreturn null;",
+        "func": "let humid = msg.payload;\nlet upper = 100;\nlet lower = 10;\nlet sendEmail = flow.get(\"sendEmail\");\n\nif ((humid < lower || humid > upper) && sendEmail == true) \n{\n    msg.topic = \"Cảnh báo! Độ ẩm dưới ngưỡng an toàn\";\n    msg.payload = \"Độ ẩm hiện tại đang nằm dưới ngưỡng cho phép: \" + humid + \"%\";\n    msg.to = flow.get(\"userEmail\");\n    return msg;\n}\nreturn null;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 220,
-        "y": 1320,
+        "x": 340,
+        "y": 1460,
         "wires": [
             [
                 "e145b6fd17e63934"
@@ -727,8 +733,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 580,
-        "y": 1060,
+        "x": 400,
+        "y": 1260,
         "wires": [
             [
                 "92a2efa75cec7430"
@@ -743,8 +749,8 @@
         "property": "payload",
         "action": "obj",
         "pretty": false,
-        "x": 370,
-        "y": 1060,
+        "x": 190,
+        "y": 1260,
         "wires": [
             [
                 "994d3136548e11c9"
@@ -765,8 +771,8 @@
         "correl": "",
         "expiry": "",
         "broker": "8195d7a4b94bdd16",
-        "x": 800,
-        "y": 1060,
+        "x": 620,
+        "y": 1260,
         "wires": []
     },
     {
@@ -784,9 +790,16 @@
         "insecureHTTPParser": false,
         "authType": "",
         "senderr": false,
-        "headers": [],
-        "x": 140,
-        "y": 1060,
+        "headers": [
+            {
+                "keyType": "Content-Type",
+                "keyValue": "",
+                "valueType": "application/json",
+                "valueValue": ""
+            }
+        ],
+        "x": 420,
+        "y": 1200,
         "wires": [
             [
                 "691b988619622cee"
@@ -805,8 +818,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 420,
-        "y": 900,
+        "x": 400,
+        "y": 1140,
         "wires": [
             []
         ]
@@ -866,7 +879,7 @@
         "rh": 0,
         "inputs": 0,
         "x": 120,
-        "y": 1560,
+        "y": 1660,
         "wires": [
             [
                 "1704aaa55f0d044c",
@@ -890,7 +903,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 320,
-        "y": 1560,
+        "y": 1660,
         "wires": []
     },
     {
@@ -918,7 +931,7 @@
         "diff": false,
         "className": "",
         "x": 330,
-        "y": 1500,
+        "y": 1600,
         "wires": []
     },
     {
@@ -934,7 +947,7 @@
         "finalize": "",
         "libs": [],
         "x": 310,
-        "y": 1640,
+        "y": 1740,
         "wires": [
             [
                 "1fd24ab564821217",
@@ -957,7 +970,7 @@
         "expiry": "",
         "broker": "8195d7a4b94bdd16",
         "x": 540,
-        "y": 1640,
+        "y": 1740,
         "wires": []
     },
     {
@@ -987,7 +1000,7 @@
         "animate": false,
         "className": "",
         "x": 260,
-        "y": 1720,
+        "y": 1820,
         "wires": [
             [
                 "ab3007e2c0c6a420"
@@ -1007,7 +1020,7 @@
         "finalize": "",
         "libs": [],
         "x": 620,
-        "y": 1720,
+        "y": 1820,
         "wires": [
             []
         ]
@@ -1020,7 +1033,7 @@
         "apikey": "798c05fb12cd851c",
         "notificationtemplate": "6eb5c1d6bdaec352",
         "x": 760,
-        "y": 1580,
+        "y": 1680,
         "wires": [
             [],
             []
@@ -1039,7 +1052,7 @@
         "finalize": "",
         "libs": [],
         "x": 560,
-        "y": 1580,
+        "y": 1680,
         "wires": [
             []
         ]
@@ -1057,7 +1070,7 @@
         "finalize": "",
         "libs": [],
         "x": 250,
-        "y": 1420,
+        "y": 1520,
         "wires": [
             [
                 "212c0c6616b8d3e1"
@@ -1081,7 +1094,7 @@
         "senderr": false,
         "headers": [],
         "x": 450,
-        "y": 1420,
+        "y": 1520,
         "wires": [
             [
                 "a20f8c08e8d52726"
@@ -1102,8 +1115,116 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 660,
-        "y": 1420,
+        "y": 1520,
         "wires": []
+    },
+    {
+        "id": "b6654d5521f1bdc9",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Store email",
+        "func": "flow.set(\"userEmail\", msg.payload.email);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dc930dafe045725e",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Create request",
+        "func": "let moisture = Math.random() * 80 + 2;\nlet temp = Math.random() * 50 + 2;\nlet light = Math.random() * 100 + 2;\n\nmsg.payload = {\n    moisture: moisture,\n    temp: temp,\n    light: light\n};\nlet autowater = flow.get(\"autowater\");\nif (autowater == true)\n    return msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 1200,
+        "wires": [
+            [
+                "c179bb95179293e6"
+            ]
+        ]
+    },
+    {
+        "id": "609df82b208b9b87",
+        "type": "inject",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "10",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 1140,
+        "wires": [
+            [
+                "dc930dafe045725e"
+            ]
+        ]
+    },
+    {
+        "id": "16ddd3b85e8c7cf4",
+        "type": "mqtt in",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127003/autowater",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8195d7a4b94bdd16",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 840,
+        "wires": [
+            [
+                "eefd52cffe4cb9b2"
+            ]
+        ]
+    },
+    {
+        "id": "eefd52cffe4cb9b2",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Check auto water active",
+        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã tự động bật máy bơm\";\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tự động tăt máy bơm\";\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 840,
+        "wires": [
+            [
+                "6dfeb6e8db219bbe"
+            ]
+        ]
     },
     {
         "id": "2b2d338d9f30ab22",
