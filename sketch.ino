@@ -120,12 +120,16 @@ void callback(char* topic, byte* message, unsigned int length) {
     {
       String timeStr = msg.substring(sepIndex + 1);
       water_time = timeStr.toInt();
-
-      digitalWrite(pump, HIGH);
-      mqttClient.publish("/23127003/autowater", "ON");
-      auto_watering = true;
-      start_water = millis();
-      end_water = start_water + water_time * 1000;
+      if (water_time == 0)
+        digitalWrite(pump, LOW);
+      else
+      {
+        digitalWrite(pump, HIGH);
+        mqttClient.publish("/23127003/autowater", "ON");
+        auto_watering = true;
+        start_water = millis();
+        end_water = start_water + water_time * 1000;
+      }
     }
   }
 }
