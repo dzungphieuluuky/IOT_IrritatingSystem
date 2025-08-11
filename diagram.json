@@ -55,7 +55,8 @@
       "left": -130.6,
       "attrs": { "color": "green" }
     },
-    { "type": "wokwi-dht22", "id": "dht1", "top": 0.3, "left": -255, "attrs": {} }
+    { "type": "wokwi-dht22", "id": "dht1", "top": 0.3, "left": -255, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": 94.7, "left": 19, "attrs": {} }
   ],
   "connections": [
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
@@ -81,6 +82,12 @@
     [ "esp:33", "ldr1:AO", "green", [ "h-191.85", "v173.5" ] ],
     [ "esp:4", "led3:A", "red", [ "h57.6", "v76.8" ] ],
     [ "led3:C", "bb1:tn.18", "blue", [ "v0" ] ],
+    [ "dht1:VCC", "bb1:tp.5", "red", [ "h-28.8", "v-57.9" ] ],
+    [ "dht1:GND", "bb1:tn.11", "black", [ "h19.2", "v-47.9" ] ],
+    [ "dht1:SDA", "esp:15", "green", [ "v9.6", "h76.9", "v-172.8" ] ],
+    [ "pot1:GND", "bb1:tn.28", "black", [ "v9.6", "h-48", "v-105.5" ] ],
+    [ "pot1:VCC", "bb1:bp.41", "red", [ "v0" ] ],
+    [ "pot1:SIG", "esp:34", "green", [ "v28.8", "h-355.6", "v-345.6" ] ],
     [ "btn1:1.l", "bb1:32t.a", "", [ "$bb" ] ],
     [ "btn1:2.l", "bb1:30t.a", "", [ "$bb" ] ],
     [ "btn1:1.r", "bb1:32b.f", "", [ "$bb" ] ],
@@ -89,9 +96,9 @@
     [ "dht1:SDA", "bb1:11t.c", "", [ "$bb" ] ],
     [ "dht1:NC", "bb1:12t.c", "", [ "$bb" ] ],
     [ "dht1:GND", "bb1:13t.c", "", [ "$bb" ] ],
-    [ "dht1:VCC", "bb1:tp.5", "red", [ "h-28.8", "v-57.9" ] ],
-    [ "dht1:GND", "bb1:tn.11", "black", [ "h19.2", "v-47.9" ] ],
-    [ "dht1:SDA", "esp:15", "green", [ "v9.6", "h76.9", "v-172.8" ] ]
+    [ "pot1:GND", "bb1:40b.f", "", [ "$bb" ] ],
+    [ "pot1:SIG", "bb1:41b.f", "", [ "$bb" ] ],
+    [ "pot1:VCC", "bb1:42b.f", "", [ "$bb" ] ]
   ],
   "dependencies": {}
 }
