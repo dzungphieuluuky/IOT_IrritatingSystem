@@ -92,62 +92,6 @@
         ]
     },
     {
-        "id": "5ac6c00ca31cb89e",
-        "type": "ui_gauge",
-        "z": "bbaae1db6d3d10cd",
-        "name": "Nhiệt độ",
-        "group": "4af142fc2271e75e",
-        "order": 1,
-        "width": 6,
-        "height": 4,
-        "gtype": "gage",
-        "title": "",
-        "label": "Nhiệt độ",
-        "format": "{{value}} °C",
-        "min": 0,
-        "max": 50,
-        "colors": [
-            "#00b500",
-            "#e6e600",
-            "#ca3838"
-        ],
-        "seg1": "",
-        "seg2": "",
-        "diff": false,
-        "className": "",
-        "x": 200,
-        "y": 200,
-        "wires": []
-    },
-    {
-        "id": "8d82255c88b0131b",
-        "type": "ui_gauge",
-        "z": "bbaae1db6d3d10cd",
-        "name": "Độ ẩm",
-        "group": "89a06004a041e750",
-        "order": 1,
-        "width": 6,
-        "height": 4,
-        "gtype": "wave",
-        "title": "",
-        "label": "%",
-        "format": "{{value}} %",
-        "min": 0,
-        "max": 100,
-        "colors": [
-            "#00b500",
-            "#e6e600",
-            "#ca3838"
-        ],
-        "seg1": "",
-        "seg2": "",
-        "diff": false,
-        "className": "",
-        "x": 200,
-        "y": 260,
-        "wires": []
-    },
-    {
         "id": "d92d87f16e5a3f5c",
         "type": "ui_switch",
         "z": "bbaae1db6d3d10cd",
@@ -1227,6 +1171,105 @@
         ]
     },
     {
+        "id": "6f4436a4036b1d89",
+        "type": "mqtt in",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127121/temperature_humidity",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "147615ce07e1cbaa",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 190,
+        "y": 1940,
+        "wires": [
+            [
+                "a4a043de618d57cf"
+            ]
+        ]
+    },
+    {
+        "id": "a4a043de618d57cf",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Tách nhiệt độ và độ ẩm",
+        "func": "var temp = msg.payload.temperature;\nvar hum = Number(msg.payload.humidity);\nreturn [{payload: temp}, {payload: hum}];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 1940,
+        "wires": [
+            [
+                "20dd005aa5865950"
+            ],
+            [
+                "2e0896ac48bcd752"
+            ]
+        ]
+    },
+    {
+        "id": "2e0896ac48bcd752",
+        "type": "ui_gauge",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Độ ẩm",
+        "group": "89a06004a041e750",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "gtype": "wave",
+        "title": "",
+        "label": "%",
+        "format": "{{value}} ",
+        "min": 0,
+        "max": 100,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 690,
+        "y": 1960,
+        "wires": []
+    },
+    {
+        "id": "20dd005aa5865950",
+        "type": "ui_gauge",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Nhiệt độ",
+        "group": "4af142fc2271e75e",
+        "order": 1,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "",
+        "label": "°C",
+        "format": "{{value}} °C",
+        "min": 0,
+        "max": 50,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 680,
+        "y": 1880,
+        "wires": []
+    },
+    {
         "id": "2b2d338d9f30ab22",
         "type": "ui_group",
         "name": "Đăng nhập",
@@ -1246,26 +1289,6 @@
         "width": "6",
         "collapse": false,
         "className": ""
-    },
-    {
-        "id": "4af142fc2271e75e",
-        "type": "ui_group",
-        "name": "Nhiệt độ",
-        "tab": "11effbb23dfb879c",
-        "order": 1,
-        "disp": true,
-        "width": "6",
-        "collapse": false
-    },
-    {
-        "id": "89a06004a041e750",
-        "type": "ui_group",
-        "name": "Độ ẩm",
-        "tab": "11effbb23dfb879c",
-        "order": 2,
-        "disp": true,
-        "width": "6",
-        "collapse": false
     },
     {
         "id": "1d2eb9851173c727",
@@ -1377,6 +1400,57 @@
         "image": "",
         "image2": "",
         "image3": ""
+    },
+    {
+        "id": "147615ce07e1cbaa",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "broker.hivemq.com",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "89a06004a041e750",
+        "type": "ui_group",
+        "name": "Độ ẩm",
+        "tab": "11effbb23dfb879c",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "4af142fc2271e75e",
+        "type": "ui_group",
+        "name": "Nhiệt độ",
+        "tab": "11effbb23dfb879c",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
     },
     {
         "id": "e94f883330d75ad9",
