@@ -1,3 +1,29 @@
+Node-RED
+ Deploy
+Tabs & Links
+Home
+Group 1
+Login
+Đăng nhập
+Hệ thống chăm sóc cây thông minh iTree
+Nhiệt độ
+Độ ẩm
+Tưới nước
+Chiếu sáng
+Thông báo
+Lịch sử
+Truy vấn lịch sử
+Ánh sáng
+Ánh sáng
+Ánh sáng
+Main
+23127003 - Phạm Ngọc Dũng
+Main
+Group 3
+Statistics
+Export nodes
+Export
+Format
 [
     {
         "id": "bbaae1db6d3d10cd",
@@ -1171,14 +1197,14 @@
         ]
     },
     {
-        "id": "6f4436a4036b1d89",
+        "id": "01bf13c2663a7e79",
         "type": "mqtt in",
         "z": "bbaae1db6d3d10cd",
         "name": "",
         "topic": "/23127121/temperature_humidity",
         "qos": "2",
         "datatype": "json",
-        "broker": "147615ce07e1cbaa",
+        "broker": "4ed5a947c88a05ef",
         "nl": false,
         "rap": false,
         "inputs": 0,
@@ -1186,16 +1212,16 @@
         "y": 1940,
         "wires": [
             [
-                "a4a043de618d57cf"
+                "736d2892463eac60"
             ]
         ]
     },
     {
-        "id": "a4a043de618d57cf",
+        "id": "736d2892463eac60",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Tách nhiệt độ và độ ẩm",
-        "func": "var temp = msg.payload.temperature;\nvar hum = Number(msg.payload.humidity);\nreturn [{payload: temp}, {payload: hum}];",
+        "func": "var temp = msg.payload.temperature;\nvar hum = Number(msg.payload.humidity);\n\n//23127005\n// flow.set(\"temp\",temp);\n// flow.set(\"hum\", hum);\n\nreturn [{payload: temp}, {payload: hum}];",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
@@ -1206,15 +1232,18 @@
         "y": 1940,
         "wires": [
             [
-                "20dd005aa5865950"
+                "c1a4513854042a33",
+                "616e6711801e9149"
             ],
             [
-                "2e0896ac48bcd752"
+                "d59ad26a7d3c75da",
+                "ed53a1456fe1a6df",
+                "41b015365a520fa7"
             ]
         ]
     },
     {
-        "id": "2e0896ac48bcd752",
+        "id": "d59ad26a7d3c75da",
         "type": "ui_gauge",
         "z": "bbaae1db6d3d10cd",
         "name": "Độ ẩm",
@@ -1242,7 +1271,7 @@
         "wires": []
     },
     {
-        "id": "20dd005aa5865950",
+        "id": "c1a4513854042a33",
         "type": "ui_gauge",
         "z": "bbaae1db6d3d10cd",
         "name": "Nhiệt độ",
@@ -1267,6 +1296,106 @@
         "className": "",
         "x": 680,
         "y": 1880,
+        "wires": []
+    },
+    {
+        "id": "616e6711801e9149",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "function 4",
+        "func": "var a = msg.payload;\nmsg.payload = {\n    api_key: \"8AZJ3HOA1ZH6ITXH\",  \n    field2: a\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 2020,
+        "wires": [
+            [
+                "5f9da6a5b30e32c4"
+            ]
+        ]
+    },
+    {
+        "id": "ed53a1456fe1a6df",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "function 5",
+        "func": "var a = msg.payload;\nmsg.payload = {\n    api_key: \"8AZJ3HOA1ZH6ITXH\",\n    field3: a\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 2080,
+        "wires": [
+            [
+                "0659d9ba7153cd3f"
+            ]
+        ]
+    },
+    {
+        "id": "5f9da6a5b30e32c4",
+        "type": "http request",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "query",
+        "url": "https://api.thingspeak.com/update?",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 370,
+        "y": 2020,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0659d9ba7153cd3f",
+        "type": "http request",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "query",
+        "url": "https://api.thingspeak.com/update?",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 370,
+        "y": 2080,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "41b015365a520fa7",
+        "type": "debug",
+        "z": "bbaae1db6d3d10cd",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 2040,
         "wires": []
     },
     {
@@ -1402,7 +1531,7 @@
         "image3": ""
     },
     {
-        "id": "147615ce07e1cbaa",
+        "id": "4ed5a947c88a05ef",
         "type": "mqtt-broker",
         "name": "",
         "broker": "broker.hivemq.com",
