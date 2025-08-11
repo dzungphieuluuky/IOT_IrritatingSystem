@@ -27,7 +27,10 @@ const int button = 14;
 const int pump = 5;
 const int LDR = 33;
 const int dht_pin = 15;   
+const int potPin = 34; 
 DHT dht(dht_pin, DHT22);
+int currentLedBrightness = 0;
+unsigned long lastUserSetTime = 0;
 
 void wifiConnect() {
   WiFi.begin(ssid, password);
@@ -50,6 +53,7 @@ void mqttConnect() {
       mqttClient.subscribe("/23127003/pump");
       mqttClient.subscribe("/23127003/autowater");
       mqttClient.subscribe("/23127005/led2");
+      mqttClient.subscribe("/23127121/led_brightness_set");
     }
     else {
       Serial.print(mqttClient.state());
@@ -110,6 +114,14 @@ void callback(char* topic, byte* message, unsigned int length) {
       digitalWrite(led2, LOW);
     }
   }
+  else if (topic_string == "/23127121/led_brightness_set") {
+    int brightness = msg.toInt();
+    brightness = constrain(brightness, 0, 255);
+    currentLedBrightness = brightness;
+    ledState = (brightness > 0);
+    analogWrite(led, brightness);
+    lastUserSetTime = millis();
+  }
 }
 
 void setup() {
@@ -127,6 +139,7 @@ void setup() {
   pinMode(pump, OUTPUT);
   pinMode(led2, OUTPUT);
   dht.begin(); 
+  analogWriteResolution(led, 8); 
 }
 
 
@@ -154,6 +167,8 @@ void loop() {
   } else {
     Serial.println("Failed to read from DHT sensor");
   }
+
+
   //***Publish data to MQTT Server***
   // int temperature = random(0,100);
   // char buffer[50];
@@ -165,7 +180,13 @@ void loop() {
   if (lastButtonState == false and buttonState == true)
   {
     ledState = !ledState;
-    digitalWrite(led, ledState);
+
+    if (ledState) {
+      analogWrite(led, currentLedBrightness > 0 ? currentLedBrightness : 255);
+    } else {
+      analogWrite(led, 0);
+    }
+    // digitalWrite(led, ledState);
     
     char led_state_message[] = "False";
     if (ledState == true)
@@ -186,6 +207,29 @@ void loop() {
   char buffer[10];
   sprintf(buffer, "%d", lightValue);
   mqttClient.publish("/23127005/LDR", buffer);
+
+  // Đọc biến trở điều chỉnh độ sáng
+  int potValue = analogRead(potPin);
+  int brightness = map(potValue, 0, 4095, 0, 255);
+  // Cập nhật LED nếu đèn đang bật
+  if (ledState) {
+    analogWrite(led, brightness);
+    currentLedBrightness = brightness;
+  } else {
+    analogWrite(led, 0);
+    currentLedBrightness = 0;
+  }
+  // Gửi trạng thái độ sáng biến trở lên Web mỗi 500ms
+  static unsigned long lastPublish = 0;
+  if (ledState && millis() - lastPublish > 500) {
+    // Nếu chưa qua 2s kể từ lúc người dùng chỉnh slider thì bỏ qua gửi giá trị từ biến trở
+    if (millis() - lastUserSetTime > 2000) {
+      char brightnessMsg[10];
+      sprintf(brightnessMsg, "%d", brightness);
+      mqttClient.publish("/23127121/led_brightness_status", brightnessMsg);
+    }
+    lastPublish = millis();
+  }
 
   delay(500);
 }
