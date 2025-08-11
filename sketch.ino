@@ -1,6 +1,6 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
-
+#include <DHT.h> 
 // WIFI init
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
@@ -19,7 +19,6 @@ bool lastButtonState = false;
 unsigned long start_water = 0;
 unsigned long end_water = 0;
 unsigned int water_time = 0;
-bool auto_watering = false;
 
 // pin port
 const int led = 2;
@@ -27,6 +26,8 @@ const int led2 = 4;
 const int button = 14;
 const int pump = 5;
 const int LDR = 33;
+const int dht_pin = 15;   
+DHT dht(dht_pin, DHT22);
 
 void wifiConnect() {
   WiFi.begin(ssid, password);
@@ -41,7 +42,7 @@ void mqttConnect() {
   while(!mqttClient.connected()) {
     Serial.println("Attemping MQTT connection...");
     String clientId = "ESP32Client-" + String(random(0xffff), HEX);
-    if (mqttClient.connect(clientId.c_str())) {
+    if(mqttClient.connect(clientId.c_str())) {
       Serial.println("connected");
 
       //***Subscribe all topic you need***
@@ -100,8 +101,6 @@ void callback(char* topic, byte* message, unsigned int length) {
       end_water = start_water + water_time * 1000;
     }
   }
-
-  // bật tắt đèn theo cường đọ ánh sáng
   else if (topic_string == "/23127005/led2")
   {
     if (msg == "ON") {
@@ -109,27 +108,6 @@ void callback(char* topic, byte* message, unsigned int length) {
     } 
     else if (msg == "OFF") {
       digitalWrite(led2, LOW);
-    }
-  }
-
-  // bật máy bơm tự động 
-  else if (topic_string == "/23127003/autowater" and msg.length() > 0)
-  {
-    int sepIndex = msg.indexOf('_');
-    if (sepIndex != -1) 
-    {
-      String timeStr = msg.substring(sepIndex + 1);
-      water_time = timeStr.toInt();
-      if (water_time == 0)
-        digitalWrite(pump, LOW);
-      else
-      {
-        digitalWrite(pump, HIGH);
-        mqttClient.publish("/23127003/autowater", "ON");
-        auto_watering = true;
-        start_water = millis();
-        end_water = start_water + water_time * 1000;
-      }
     }
   }
 }
@@ -148,6 +126,7 @@ void setup() {
   pinMode(led, OUTPUT);
   pinMode(pump, OUTPUT);
   pinMode(led2, OUTPUT);
+  dht.begin(); 
 }
 
 
@@ -161,6 +140,20 @@ void loop() {
   }
   mqttClient.loop();
 
+
+  // 1. Đọc cảm biến DHT
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+
+  if (!isnan(temperature) && !isnan(humidity)){
+    char payload[100];
+    snprintf(payload, sizeof(payload), "{\"temperature\":%.2f, \"humidity\":%.2f}", temperature, humidity);
+    mqttClient.publish("/23127121/temperature_humidity", payload);
+    Serial.print("Published: ");
+    Serial.println(payload);
+  } else {
+    Serial.println("Failed to read from DHT sensor");
+  }
   //***Publish data to MQTT Server***
   // int temperature = random(0,100);
   // char buffer[50];
@@ -184,13 +177,7 @@ void loop() {
   if (millis() >= end_water and end_water > 0)
   {
     digitalWrite(pump, LOW);
-    if (auto_watering == true)
-    {
-      mqttClient.publish("/23127003/autowater", "OFF");
-      auto_watering = false;
-    }
-    else
-      mqttClient.publish("/23127003/pump", "OFF");
+    mqttClient.publish("/23127003/pump", "OFF");
     start_water = 0;
     end_water = 0;
   }
