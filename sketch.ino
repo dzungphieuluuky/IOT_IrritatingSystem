@@ -1,6 +1,8 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <DHT.h> 
+#include <LiquidCrystal_I2C.h>
+
 // WIFI init
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
@@ -32,6 +34,8 @@ DHT dht(dht_pin, DHT22);
 int currentLedBrightness = 0;
 unsigned long lastUserSetTime = 0;
 
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 void wifiConnect() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -54,6 +58,9 @@ void mqttConnect() {
       mqttClient.subscribe("/23127003/autowater");
       mqttClient.subscribe("/23127005/led2");
       mqttClient.subscribe("/23127121/led_brightness_set");
+      mqttClient.subscribe("/23127005/lcd_temperature");
+      mqttClient.subscribe("/23127005/lcd_humidity");
+
     }
     else {
       Serial.print(mqttClient.state());
@@ -105,6 +112,7 @@ void callback(char* topic, byte* message, unsigned int length) {
       end_water = start_water + water_time * 1000;
     }
   }
+  // tự động bật đèn khi trời tối
   else if (topic_string == "/23127005/led2")
   {
     if (msg == "ON") {
@@ -121,6 +129,25 @@ void callback(char* topic, byte* message, unsigned int length) {
     ledState = (brightness > 0);
     analogWrite(led, brightness);
     lastUserSetTime = millis();
+  }
+  // lcd temperature
+  else if(topic_string == "/23127005/lcd_temperature")
+  {
+    lcd.setCursor(9,0);
+    lcd.print("       ");
+    lcd.setCursor(9,0);
+    lcd.print(msg);
+    lcd.write(byte(223));
+    lcd.print("C");
+  }
+  // lcd humidity
+  else if(topic_string == "/23127005/lcd_humidity")
+  {
+    lcd.setCursor(6,1);
+    lcd.print("      ");
+    lcd.setCursor(6,1);
+    lcd.print(msg);
+    lcd.print("%");
   }
 }
 
@@ -140,6 +167,12 @@ void setup() {
   pinMode(led2, OUTPUT);
   dht.begin(); 
   analogWriteResolution(led, 8); 
+  lcd.init(); 
+  lcd.backlight(); 
+  lcd.setCursor(0, 0);
+  lcd.print("Nhiet do: ");
+  lcd.setCursor(0, 1);
+  lcd.print("Do am: ");
 }
 
 
@@ -162,8 +195,8 @@ void loop() {
     char payload[100];
     snprintf(payload, sizeof(payload), "{\"temperature\":%.2f, \"humidity\":%.2f}", temperature, humidity);
     mqttClient.publish("/23127121/temperature_humidity", payload);
-    Serial.print("Published: ");
-    Serial.println(payload);
+   // Serial.print("Published: ");
+   // Serial.println(payload);
   } else {
     Serial.println("Failed to read from DHT sensor");
   }
@@ -203,6 +236,7 @@ void loop() {
     end_water = 0;
   }
 
+  //quang trở
   int lightValue = analogRead(LDR);  // đọc từ quang trở (0-4095)
   char buffer[10];
   sprintf(buffer, "%d", lightValue);
@@ -230,6 +264,8 @@ void loop() {
     }
     lastPublish = millis();
   }
+
+  //lcd
 
   delay(500);
 }
