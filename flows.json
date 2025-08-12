@@ -810,259 +810,6 @@
         ]
     },
     {
-        "id": "58efd16fc06e5007",
-        "type": "mqtt in",
-        "z": "bbaae1db6d3d10cd",
-        "name": "",
-        "topic": "/23127005/LDR",
-        "qos": "2",
-        "datatype": "auto-detect",
-        "broker": "8195d7a4b94bdd16",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 0,
-        "x": 120,
-        "y": 1660,
-        "wires": [
-            [
-                "1704aaa55f0d044c",
-                "1ba031f61811a785",
-                "f208bbe00e0494f8",
-                "d1257fc7709803da"
-            ]
-        ]
-    },
-    {
-        "id": "1704aaa55f0d044c",
-        "type": "debug",
-        "z": "bbaae1db6d3d10cd",
-        "name": "debug 4",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 320,
-        "y": 1660,
-        "wires": []
-    },
-    {
-        "id": "1ba031f61811a785",
-        "type": "ui_gauge",
-        "z": "bbaae1db6d3d10cd",
-        "name": "",
-        "group": "92be35e746bc4e42",
-        "order": 0,
-        "width": 0,
-        "height": 0,
-        "gtype": "gage",
-        "title": "Độ tối",
-        "label": "units",
-        "format": "{{value}}",
-        "min": 0,
-        "max": "4095",
-        "colors": [
-            "#ffffff",
-            "#858585",
-            "#000000"
-        ],
-        "seg1": "",
-        "seg2": "",
-        "diff": false,
-        "className": "",
-        "x": 330,
-        "y": 1600,
-        "wires": []
-    },
-    {
-        "id": "f208bbe00e0494f8",
-        "type": "function",
-        "z": "bbaae1db6d3d10cd",
-        "name": "Msg ON when dark",
-        "func": "flow.set(\"past\", flow.get(\"now\"));\nlet auto_led2 = flow.get(\"autoled2\");\nlet light_intensity = parseInt(msg.payload);\n\nif (auto_led2 == 1)\n{\n    if (light_intensity > 3000)\n    {\n        msg.payload = \"ON\";\n        flow.set(\"now\", 1);\n    }\n    else\n    {\n        msg.payload = \"OFF\"; \n        flow.set(\"now\", 0);\n    }\n    if (flow.get(\"past\") != flow.get(\"now\"))\n        return msg;\n}",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 310,
-        "y": 1740,
-        "wires": [
-            [
-                "1fd24ab564821217",
-                "b6624eb6b63c061b"
-            ]
-        ]
-    },
-    {
-        "id": "b6624eb6b63c061b",
-        "type": "mqtt out",
-        "z": "bbaae1db6d3d10cd",
-        "name": "",
-        "topic": "/23127005/led2",
-        "qos": "2",
-        "retain": "",
-        "respTopic": "",
-        "contentType": "",
-        "userProps": "",
-        "correl": "",
-        "expiry": "",
-        "broker": "8195d7a4b94bdd16",
-        "x": 540,
-        "y": 1740,
-        "wires": []
-    },
-    {
-        "id": "1a4d97766117b7bf",
-        "type": "ui_switch",
-        "z": "bbaae1db6d3d10cd",
-        "name": "",
-        "label": "Chế độ tự động bật đèn dựa vào cường độ ánh sáng",
-        "tooltip": "",
-        "group": "92be35e746bc4e42",
-        "order": 1,
-        "width": 0,
-        "height": 0,
-        "passthru": true,
-        "decouple": "false",
-        "topic": "topic",
-        "topicType": "msg",
-        "style": "",
-        "onvalue": "true",
-        "onvalueType": "bool",
-        "onicon": "",
-        "oncolor": "",
-        "offvalue": "false",
-        "offvalueType": "bool",
-        "officon": "",
-        "offcolor": "",
-        "animate": false,
-        "className": "",
-        "x": 260,
-        "y": 1820,
-        "wires": [
-            [
-                "ab3007e2c0c6a420"
-            ]
-        ]
-    },
-    {
-        "id": "ab3007e2c0c6a420",
-        "type": "function",
-        "z": "bbaae1db6d3d10cd",
-        "name": "Set autoled variable",
-        "func": "flow.set(\"autoled2\", msg.payload);\nflow.set(\"past\", 0);\nflow.set(\"now\", 0);\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 620,
-        "y": 1820,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "52101d37b65c2eeb",
-        "type": "pushsafer",
-        "z": "bbaae1db6d3d10cd",
-        "name": "",
-        "apikey": "798c05fb12cd851c",
-        "notificationtemplate": "6eb5c1d6bdaec352",
-        "x": 760,
-        "y": 1680,
-        "wires": [
-            [],
-            []
-        ]
-    },
-    {
-        "id": "1fd24ab564821217",
-        "type": "function",
-        "z": "bbaae1db6d3d10cd",
-        "name": "Msg when turn on light",
-        "func": "let led2_now_state = flow.get(\"now\");\nlet led2_past_state = flow.get(\"past\");\nif (led2_now_state == 1 && led2_past_state == 0)\n    msg.payload = \"Đèn đã được bật tự động\";\nelse\n    msg = null;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 560,
-        "y": 1680,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "d1257fc7709803da",
-        "type": "function",
-        "z": "bbaae1db6d3d10cd",
-        "name": "Create msg for http",
-        "func": "var a = msg.payload;\nmsg.payload = {\n    api_key: \"8AZJ3HOA1ZH6ITXH\",  \n    field1: a\n};\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 250,
-        "y": 1520,
-        "wires": [
-            [
-                "212c0c6616b8d3e1"
-            ]
-        ]
-    },
-    {
-        "id": "212c0c6616b8d3e1",
-        "type": "http request",
-        "z": "bbaae1db6d3d10cd",
-        "name": "",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": "query",
-        "url": "https://api.thingspeak.com/update?",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 450,
-        "y": 1520,
-        "wires": [
-            [
-                "a20f8c08e8d52726"
-            ]
-        ]
-    },
-    {
-        "id": "a20f8c08e8d52726",
-        "type": "debug",
-        "z": "bbaae1db6d3d10cd",
-        "name": "debug 5",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 660,
-        "y": 1520,
-        "wires": []
-    },
-    {
         "id": "b6654d5521f1bdc9",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
@@ -1171,53 +918,272 @@
         ]
     },
     {
-        "id": "01bf13c2663a7e79",
+        "id": "2c84124141b0313e",
+        "type": "mqtt in",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127005/LDR",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8195d7a4b94bdd16",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 1680,
+        "wires": [
+            [
+                "55b5e0cd2ac911b9",
+                "1f965edcf835be64"
+            ]
+        ]
+    },
+    {
+        "id": "d702eceeb352604e",
+        "type": "ui_gauge",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "group": "7607a4292b050cbe",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Độ sáng",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "4095",
+        "colors": [
+            "#000000",
+            "#858585",
+            "#ffffff"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 600,
+        "y": 1620,
+        "wires": []
+    },
+    {
+        "id": "55b5e0cd2ac911b9",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Bật đèn khi trời tối",
+        "func": "flow.set(\"past\", flow.get(\"now\") ?? null);\nlet auto_led2 = flow.get(\"autoled2\") || 0;\nlet dark = parseInt(msg.payload);\n\nif (auto_led2 == 1)\n{\n    if (dark > 3000)\n    {\n        msg.payload = \"ON\";\n        flow.set(\"now\", 1);\n    }\n    else\n    {\n        msg.payload = \"OFF\"; \n        flow.set(\"now\", 0);\n    }\n    if (flow.get(\"past\") != flow.get(\"now\"))\n        return msg;\n}\n\nreturn null",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 1760,
+        "wires": [
+            [
+                "23f1d8409461c681",
+                "c35d1ad3b0db23f7"
+            ]
+        ]
+    },
+    {
+        "id": "c35d1ad3b0db23f7",
+        "type": "mqtt out",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127005/led2",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "8195d7a4b94bdd16",
+        "x": 720,
+        "y": 1760,
+        "wires": []
+    },
+    {
+        "id": "511f9c0ad81d9fe0",
+        "type": "ui_switch",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "label": "Chế độ tự động bật đèn dựa vào cường độ ánh sáng",
+        "tooltip": "",
+        "group": "7607a4292b050cbe",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "topic",
+        "topicType": "msg",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "className": "",
+        "x": 240,
+        "y": 1840,
+        "wires": [
+            [
+                "b33d9a6fd8949dbf"
+            ]
+        ]
+    },
+    {
+        "id": "b33d9a6fd8949dbf",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Set giá trị mặc định",
+        "func": "flow.set(\"autoled2\", msg.payload);\nflow.set(\"past\", 0);\nflow.set(\"now\", 0);\nif (msg.payload == 0) \n    msg.payload = \"OFF\";\nelse\n    return null;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 1840,
+        "wires": [
+            [
+                "c35d1ad3b0db23f7"
+            ]
+        ]
+    },
+    {
+        "id": "ab2e9e035eac55c7",
+        "type": "pushsafer",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "apikey": "9c95a611b09767a7",
+        "notificationtemplate": "950592658439a3f7",
+        "x": 740,
+        "y": 1700,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "23f1d8409461c681",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Thông báo pushsafer",
+        "func": "let led2_now_state = flow.get(\"now\");\nlet led2_past_state = flow.get(\"past\");\nif (led2_now_state == 1 && led2_past_state == 0)\n    msg.payload = \"Đèn đã được bật tự động\";\nelse\n    msg = null;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 1700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ea110913ae10d704",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Độ sáng cloud",
+        "func": "var a = msg.payload;\nmsg.payload = {\n    api_key: \"8AZJ3HOA1ZH6ITXH\",  \n    field1: a\n};\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 1540,
+        "wires": [
+            [
+                "9785265fcabad35f"
+            ]
+        ]
+    },
+    {
+        "id": "9785265fcabad35f",
+        "type": "http request",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "query",
+        "url": "https://api.thingspeak.com/update?",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 630,
+        "y": 1540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "49d52cb5c5d24f4b",
         "type": "mqtt in",
         "z": "bbaae1db6d3d10cd",
         "name": "",
         "topic": "/23127121/temperature_humidity",
         "qos": "2",
         "datatype": "json",
-        "broker": "4ed5a947c88a05ef",
+        "broker": "8195d7a4b94bdd16",
         "nl": false,
         "rap": false,
         "inputs": 0,
-        "x": 190,
-        "y": 1940,
+        "x": 170,
+        "y": 1960,
         "wires": [
             [
-                "736d2892463eac60"
+                "a045a10b5ea032ac"
             ]
         ]
     },
     {
-        "id": "736d2892463eac60",
+        "id": "a045a10b5ea032ac",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Tách nhiệt độ và độ ẩm",
-        "func": "var temp = msg.payload.temperature;\nvar hum = Number(msg.payload.humidity);\n\n//23127005\n// flow.set(\"temp\",temp);\n// flow.set(\"hum\", hum);\n\nreturn [{payload: temp}, {payload: hum}];",
+        "func": "var temp = msg.payload.temperature;\nvar hum = Number(msg.payload.humidity);\nreturn [{payload: temp}, {payload: hum}];",
         "outputs": 2,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 450,
-        "y": 1940,
+        "x": 430,
+        "y": 1960,
         "wires": [
             [
-                "c1a4513854042a33",
-                "616e6711801e9149"
+                "5a48e96bb118cf72",
+                "c238e6608b83b107",
+                "b2e6413c2558274f",
+                "88ef22f48eca5939"
             ],
             [
-                "d59ad26a7d3c75da",
-                "ed53a1456fe1a6df",
-                "41b015365a520fa7"
+                "ab910571ad63d41d",
+                "7c4ec744b1b7692d",
+                "f31d59d141fc4f53"
             ]
         ]
     },
     {
-        "id": "d59ad26a7d3c75da",
+        "id": "ab910571ad63d41d",
         "type": "ui_gauge",
         "z": "bbaae1db6d3d10cd",
         "name": "Độ ẩm",
@@ -1240,12 +1206,12 @@
         "seg2": "",
         "diff": false,
         "className": "",
-        "x": 690,
-        "y": 1960,
+        "x": 670,
+        "y": 1980,
         "wires": []
     },
     {
-        "id": "c1a4513854042a33",
+        "id": "5a48e96bb118cf72",
         "type": "ui_gauge",
         "z": "bbaae1db6d3d10cd",
         "name": "Nhiệt độ",
@@ -1257,26 +1223,26 @@
         "title": "",
         "label": "°C",
         "format": "{{value}} °C",
-        "min": 0,
-        "max": 50,
+        "min": "-40",
+        "max": "80",
         "colors": [
-            "#00b500",
-            "#e6e600",
+            "#004cff",
+            "#00ff40",
             "#ca3838"
         ],
         "seg1": "",
         "seg2": "",
         "diff": false,
         "className": "",
-        "x": 680,
-        "y": 1880,
+        "x": 660,
+        "y": 1900,
         "wires": []
     },
     {
-        "id": "616e6711801e9149",
+        "id": "c238e6608b83b107",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
-        "name": "function 4",
+        "name": "Nhiệt độ cloud",
         "func": "var a = msg.payload;\nmsg.payload = {\n    api_key: \"8AZJ3HOA1ZH6ITXH\",  \n    field2: a\n};\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
@@ -1285,18 +1251,18 @@
         "finalize": "",
         "libs": [],
         "x": 180,
-        "y": 2020,
+        "y": 2040,
         "wires": [
             [
-                "5f9da6a5b30e32c4"
+                "758bdd55e1df85e9"
             ]
         ]
     },
     {
-        "id": "ed53a1456fe1a6df",
+        "id": "7c4ec744b1b7692d",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
-        "name": "function 5",
+        "name": "Độ ẩm cloud",
         "func": "var a = msg.payload;\nmsg.payload = {\n    api_key: \"8AZJ3HOA1ZH6ITXH\",\n    field3: a\n};\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
@@ -1304,16 +1270,16 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 180,
-        "y": 2080,
+        "x": 170,
+        "y": 2100,
         "wires": [
             [
-                "0659d9ba7153cd3f"
+                "e00dd490dcf37f78"
             ]
         ]
     },
     {
-        "id": "5f9da6a5b30e32c4",
+        "id": "758bdd55e1df85e9",
         "type": "http request",
         "z": "bbaae1db6d3d10cd",
         "name": "",
@@ -1328,49 +1294,162 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 370,
-        "y": 2020,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "0659d9ba7153cd3f",
-        "type": "http request",
-        "z": "bbaae1db6d3d10cd",
-        "name": "",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": "query",
-        "url": "https://api.thingspeak.com/update?",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 370,
-        "y": 2080,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "41b015365a520fa7",
-        "type": "debug",
-        "z": "bbaae1db6d3d10cd",
-        "name": "debug 6",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 610,
+        "x": 350,
         "y": 2040,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e00dd490dcf37f78",
+        "type": "http request",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "query",
+        "url": "https://api.thingspeak.com/update?",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 350,
+        "y": 2100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b2e6413c2558274f",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Thông báo pushsafer",
+        "func": "let temstate = flow.get(\"temstate\") || 0;\n\nif(msg.payload >= 40)\n{    if(temstate == 1)\n        msg = null;\n    else\n       { msg.payload = \"Nhiệt độ quá cao!!!\"; flow.set(\"temstate\",1);}\n}\nelse\n    {\n        flow.set(\"temstate\",0);\n        msg = null;\n    }\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 2200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "858dbcd98c0cd1ee",
+        "type": "pushsafer",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "apikey": "9c95a611b09767a7",
+        "notificationtemplate": "1e93a6555dcb2f50",
+        "x": 520,
+        "y": 2200,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "be566b8c61b82d24",
+        "type": "mqtt out",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127005/lcd_temperature",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "8195d7a4b94bdd16",
+        "x": 900,
+        "y": 2080,
         "wires": []
+    },
+    {
+        "id": "02fe0348171c1bc1",
+        "type": "mqtt out",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127005/lcd_humidity",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "8195d7a4b94bdd16",
+        "x": 750,
+        "y": 2200,
+        "wires": []
+    },
+    {
+        "id": "88ef22f48eca5939",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Nhiệt độ -> lcd",
+        "func": "// Lấy nhiệt độ cũ từ biến flow (nếu chưa có thì mặc định là null)\nlet lastTemp = flow.get(\"lastTemp\") || null;\n\n// Lấy nhiệt độ mới từ payload\nlet newTemp = msg.payload;\n\n// So sánh\nif (newTemp === lastTemp) {\n    // Nếu giống nhau → không gửi gì cả\n    return null;\n} else {\n    // Nếu khác → lưu lại nhiệt độ mới\n    flow.set(\"lastTemp\", newTemp);\n    msg.payload = newTemp;\n    return msg;\n}\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 2040,
+        "wires": [
+            [
+                "be566b8c61b82d24"
+            ]
+        ]
+    },
+    {
+        "id": "f31d59d141fc4f53",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Độ ẩm -> lcd",
+        "func": "// Lấy nhiệt độ cũ từ biến flow (nếu chưa có thì mặc định là null)\nlet lastTemp = flow.get(\"lastHud\") || null;\n\n// Lấy nhiệt độ mới từ payload\nlet newTemp = msg.payload;\n\n// So sánh\nif (newTemp === lastTemp) {\n    // Nếu giống nhau → không gửi gì cả\n    return null;\n} else {\n    // Nếu khác → lưu lại nhiệt độ mới\n    flow.set(\"lastHud\", newTemp);\n    msg.payload = newTemp;\n    return msg;\n}\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 2100,
+        "wires": [
+            [
+                "02fe0348171c1bc1"
+            ]
+        ]
+    },
+    {
+        "id": "1f965edcf835be64",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Chuyển tối thành sáng",
+        "func": "msg.payload = 4095 - msg.payload\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 1620,
+        "wires": [
+            [
+                "d702eceeb352604e",
+                "ea110913ae10d704"
+            ]
+        ]
     },
     {
         "id": "2b2d338d9f30ab22",
@@ -1465,7 +1544,7 @@
         "sessionExpiry": ""
     },
     {
-        "id": "92be35e746bc4e42",
+        "id": "7607a4292b050cbe",
         "type": "ui_group",
         "name": "Ánh sáng",
         "tab": "11effbb23dfb879c",
@@ -1476,12 +1555,12 @@
         "className": ""
     },
     {
-        "id": "798c05fb12cd851c",
+        "id": "9c95a611b09767a7",
         "type": "pushsafer-api-key",
         "name": ""
     },
     {
-        "id": "6eb5c1d6bdaec352",
+        "id": "950592658439a3f7",
         "type": "pushsafer-notification-template",
         "name": "Noti",
         "title": "Thông báo",
@@ -1505,37 +1584,6 @@
         "image3": ""
     },
     {
-        "id": "4ed5a947c88a05ef",
-        "type": "mqtt-broker",
-        "name": "",
-        "broker": "broker.hivemq.com",
-        "port": 1883,
-        "clientid": "",
-        "autoConnect": true,
-        "usetls": false,
-        "protocolVersion": 4,
-        "keepalive": 60,
-        "cleansession": true,
-        "autoUnsubscribe": true,
-        "birthTopic": "",
-        "birthQos": "0",
-        "birthRetain": "false",
-        "birthPayload": "",
-        "birthMsg": {},
-        "closeTopic": "",
-        "closeQos": "0",
-        "closeRetain": "false",
-        "closePayload": "",
-        "closeMsg": {},
-        "willTopic": "",
-        "willQos": "0",
-        "willRetain": "false",
-        "willPayload": "",
-        "willMsg": {},
-        "userProps": "",
-        "sessionExpiry": ""
-    },
-    {
         "id": "89a06004a041e750",
         "type": "ui_group",
         "name": "Độ ẩm",
@@ -1554,6 +1602,30 @@
         "disp": true,
         "width": "6",
         "collapse": false
+    },
+    {
+        "id": "1e93a6555dcb2f50",
+        "type": "pushsafer-notification-template",
+        "name": "Noti",
+        "title": "Thông báo",
+        "icon": "",
+        "iconcolor": "#ffffff",
+        "sound": "5",
+        "vibration": "1",
+        "priority": "0",
+        "devices": "",
+        "timetolive": "",
+        "retry": "",
+        "expire": "",
+        "confirm": "",
+        "answer": "",
+        "answeroptions": "",
+        "answerforce": "",
+        "url": "",
+        "urltitle": "",
+        "image": "",
+        "image2": "",
+        "image3": ""
     },
     {
         "id": "e94f883330d75ad9",
