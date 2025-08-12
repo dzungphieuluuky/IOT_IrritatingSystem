@@ -74,35 +74,6 @@
         ]
     },
     {
-        "id": "4660bd78cd03690d",
-        "type": "ui_button",
-        "z": "bbaae1db6d3d10cd",
-        "name": "pump_manual",
-        "group": "1d2eb9851173c727",
-        "order": 3,
-        "width": 6,
-        "height": 1,
-        "passthru": false,
-        "label": "Tưới ngay",
-        "tooltip": "Nhấn để tưới nước thủ công",
-        "color": "white",
-        "bgcolor": "green",
-        "className": "",
-        "icon": "fa-play",
-        "payload": "ON",
-        "payloadType": "str",
-        "topic": "pump_manual",
-        "topicType": "str",
-        "x": 120,
-        "y": 920,
-        "wires": [
-            [
-                "7df82ca30fd8aee2",
-                "b31ab048377f74ac"
-            ]
-        ]
-    },
-    {
         "id": "703787dcd3a8185c",
         "type": "ui_slider",
         "z": "bbaae1db6d3d10cd",
@@ -1881,10 +1852,13 @@
         "payloadType": "str",
         "topic": "pump_manual",
         "topicType": "str",
-        "x": 160,
-        "y": 3160,
+        "x": 120,
+        "y": 920,
         "wires": [
-            []
+            [
+                "7df82ca30fd8aee2",
+                "b31ab048377f74ac"
+            ]
         ]
     },
     {
