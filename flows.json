@@ -87,7 +87,7 @@
         "tooltip": "Nhấn để bật hoặc tắt đèn",
         "color": "white",
         "bgcolor": "#337ab7",
-        "className": "",
+        "className": "stylish-action-button",
         "icon": "fa-lightbulb-o",
         "payload": "toggle",
         "payloadType": "str",
@@ -1822,7 +1822,7 @@
         "tooltip": "Nhấn để tưới nước thủ công",
         "color": "white",
         "bgcolor": "green",
-        "className": "",
+        "className": "custom-action-button",
         "icon": "fa-tint",
         "payload": "ON",
         "payloadType": "str",
@@ -2072,6 +2072,27 @@
         "headers": [],
         "x": 640,
         "y": 1000,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0d5a717440330474",
+        "type": "ui_template",
+        "z": "bbaae1db6d3d10cd",
+        "group": "1d2eb9851173c727",
+        "name": "",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    /* Style for our custom button class */\n    .custom-action-button button {\n        /* Make the button circular and remove the default border */\n        border-radius: 50% !important;\n        border: none;\n\n        /* Add depth with a shadow */\n        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);\n\n        /* Ensure smooth animations for hover/click effects */\n        transition: all 0.2s ease-in-out;\n\n        /* Make the icon larger, as there is no text */\n        font-size: 24px;\n\n        /* Override default padding to keep it circular */\n        padding: 15px !important;\n        min-width: 0;\n        min-height: 0;\n        line-height: 1;\n    }\n\n    /* --- INTERACTIVE EFFECTS --- */\n\n    /* Effect for when the mouse is hovering over the button */\n    .custom-action-button button:hover {\n        /* Make the shadow larger to 'lift' the button */\n        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);\n\n        /* Move the button up slightly */\n        transform: translateY(-2px);\n\n        /* Make the color slightly brighter */\n        filter: brightness(1.1);\n    }\n\n    /* Effect for when the button is being clicked */\n    .custom-action-button button:active {\n        /* Reduce the shadow to make it look 'pressed' */\n        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);\n\n        /* Move the button down to simulate a press */\n        transform: translateY(1px);\n\n        /* Make it slightly darker */\n        filter: brightness(0.9);\n    }\n</style>\n<style>\n/* Style for our custom button class */\n.stylish-action-button button {\n    /* Make the button circular and remove the default border */\n    border-radius: 50% !important; \n    border: none;\n    \n    /* Add depth with a shadow to make it 'pop' */\n    box-shadow: 0 4px 9px rgba(0,0,0,0.25);\n    \n    /* Ensure smooth animations for hover/click effects */\n    transition: all 0.2s ease-in-out;\n\n    /* Make the icon larger, as there is no text label */\n    font-size: 24px;\n}\n\n/* --- INTERACTIVE EFFECTS --- */\n\n/* Effect for when the mouse is hovering over the button */\n.stylish-action-button button:hover {\n    /* Make the shadow larger to 'lift' the button */\n    box-shadow: 0 7px 14px rgba(0,0,0,0.3);\n    \n    /* Move the button up slightly */\n    transform: translateY(-3px);\n    \n    /* Make the color slightly brighter */\n    filter: brightness(1.1);\n}\n\n/* Effect for when the button is being clicked */\n.stylish-action-button button:active {\n    /* Reduce the shadow to make it look 'pressed' */\n    box-shadow: 0 2px 4px rgba(0,0,0,0.2);\n\n    /* Move the button down to simulate a press */\n    transform: translateY(1px);\n\n    /* Make it slightly darker */\n    filter: brightness(0.95);\n}\n</style>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "global",
+        "className": "",
+        "x": 800,
+        "y": 800,
         "wires": [
             []
         ]
