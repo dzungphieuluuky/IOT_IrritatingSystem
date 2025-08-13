@@ -21,6 +21,7 @@ bool lastButtonState = false;
 unsigned long start_water = 0;
 unsigned long end_water = 0;
 unsigned int water_time = 0;
+bool auto_watering = false;
 
 // pin port
 const int led = 2;
@@ -107,11 +108,31 @@ void callback(char* topic, byte* message, unsigned int length) {
       water_time = timeStr.toInt();
 
       digitalWrite(pump, HIGH);
+      auto_watering = false;
       mqttClient.publish("/23127003/pump", "ON");
       start_water = millis();
       end_water = start_water + water_time * 1000;
     }
   }
+
+  // tự động tưới nước theo model
+  else if (topic_string == "/23127003/autowater" and msg.length() > 0)
+  {
+
+    int sepIndex = msg.indexOf('_');
+    if (sepIndex != -1) 
+    {
+      String timeStr = msg.substring(sepIndex + 1);
+      water_time = timeStr.toInt();
+
+      digitalWrite(pump, HIGH);
+      auto_watering = true;
+      mqttClient.publish("/23127003/autowater", "ON");
+      start_water = millis();
+      end_water = start_water + water_time * 1000;
+    }
+  }
+
   // tự động bật đèn khi trời tối
   else if (topic_string == "/23127005/led2")
   {
@@ -231,7 +252,13 @@ void loop() {
   if (millis() >= end_water and end_water > 0)
   {
     digitalWrite(pump, LOW);
-    mqttClient.publish("/23127003/pump", "OFF");
+    if (auto_watering)
+    {
+      mqttClient.publish("/23127003/autowater", "OFF");
+      auto_watering = false;
+    }
+    else
+      mqttClient.publish("/23127003/pump", "OFF");
     start_water = 0;
     end_water = 0;
   }
@@ -267,5 +294,5 @@ void loop() {
 
   //lcd
 
-  delay(500);
+  // delay(500);
 }
