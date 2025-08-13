@@ -74,39 +74,14 @@
         ]
     },
     {
-        "id": "703787dcd3a8185c",
-        "type": "ui_slider",
-        "z": "bbaae1db6d3d10cd",
-        "name": "Cường độ đèn",
-        "label": "Độ sáng",
-        "tooltip": "{{value}}",
-        "group": "1dd841083e538fcb",
-        "order": 1,
-        "width": 6,
-        "height": 1,
-        "passthru": true,
-        "outs": "all",
-        "topic": "light_level",
-        "topicType": "str",
-        "min": 0,
-        "max": 100,
-        "step": 1,
-        "className": "",
-        "x": 860,
-        "y": 540,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "b244c90ea27fd291",
         "type": "ui_button",
         "z": "bbaae1db6d3d10cd",
         "name": "Bật/Tắt đèn",
         "group": "1dd841083e538fcb",
-        "order": 2,
+        "order": 3,
         "width": 6,
-        "height": 1,
+        "height": 2,
         "passthru": false,
         "label": "{{label_light}}",
         "tooltip": "Nhấn để bật hoặc tắt đèn",
@@ -132,7 +107,7 @@
         "type": "ui_text",
         "z": "bbaae1db6d3d10cd",
         "group": "1dd841083e538fcb",
-        "order": 3,
+        "order": 2,
         "width": 6,
         "height": 1,
         "name": "Trạng thái đèn",
@@ -145,7 +120,7 @@
         "fontSize": "",
         "color": "#000000",
         "x": 980,
-        "y": 600,
+        "y": 560,
         "wires": []
     },
     {
@@ -185,8 +160,8 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 180,
-        "y": 420,
+        "x": 860,
+        "y": 320,
         "wires": [
             []
         ]
@@ -219,8 +194,8 @@
         "topicType": "str",
         "splitLayout": false,
         "className": "",
-        "x": 250,
-        "y": 340,
+        "x": 770,
+        "y": 260,
         "wires": [
             []
         ]
@@ -258,7 +233,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 570,
+        "x": 610,
         "y": 300,
         "wires": [
             []
@@ -340,8 +315,8 @@
         "y": 540,
         "wires": [
             [
-                "703787dcd3a8185c",
-                "4adb3517ada067ed"
+                "4adb3517ada067ed",
+                "fc5ad190aaca474b"
             ]
         ]
     },
@@ -388,7 +363,8 @@
         "y": 600,
         "wires": [
             [
-                "eb618a0e705e2c44"
+                "eb618a0e705e2c44",
+                "1d1a43dcd4f9edf8"
             ]
         ]
     },
@@ -864,7 +840,7 @@
         "z": "bbaae1db6d3d10cd",
         "name": "",
         "group": "5ee574f87092e9d2",
-        "order": 0,
+        "order": 1,
         "width": 0,
         "height": 0,
         "gtype": "gage",
@@ -930,10 +906,10 @@
         "type": "ui_switch",
         "z": "bbaae1db6d3d10cd",
         "name": "",
-        "label": "Chế độ tự động bật đèn dựa vào cường độ ánh sáng",
+        "label": "Tự động bật đèn theo ánh sáng môi trường",
         "tooltip": "",
         "group": "5ee574f87092e9d2",
-        "order": 1,
+        "order": 2,
         "width": 0,
         "height": 0,
         "passthru": true,
@@ -951,7 +927,7 @@
         "offcolor": "",
         "animate": false,
         "className": "",
-        "x": 260,
+        "x": 230,
         "y": 1840,
         "wires": [
             [
@@ -1110,8 +1086,8 @@
         "name": "Độ ẩm",
         "group": "89a06004a041e750",
         "order": 1,
-        "width": "6",
-        "height": "4",
+        "width": 6,
+        "height": 4,
         "gtype": "wave",
         "title": "",
         "label": "%",
@@ -1840,7 +1816,7 @@
         "group": "1d2eb9851173c727",
         "order": 3,
         "width": 6,
-        "height": 1,
+        "height": 2,
         "passthru": false,
         "label": "",
         "tooltip": "Nhấn để tưới nước thủ công",
@@ -1857,7 +1833,8 @@
         "wires": [
             [
                 "7df82ca30fd8aee2",
-                "b31ab048377f74ac"
+                "b31ab048377f74ac",
+                "6624356b64a430d4"
             ]
         ]
     },
@@ -1887,6 +1864,216 @@
             [
                 "1a59dad3ea9eb043"
             ]
+        ]
+    },
+    {
+        "id": "11b7fee7272fd820",
+        "type": "mqtt in",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127121/led_brightness_status",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "38d1a017c70ee818",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 440,
+        "wires": [
+            [
+                "12fbc016c4c41297"
+            ]
+        ]
+    },
+    {
+        "id": "12fbc016c4c41297",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Cập nhật slider từ ESP32",
+        "func": "msg._source = \"mqtt\";\nmsg.payload = Math.round(Number(msg.payload) * 100 / 255);\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 440,
+        "wires": [
+            [
+                "fc5ad190aaca474b"
+            ]
+        ]
+    },
+    {
+        "id": "fc5ad190aaca474b",
+        "type": "ui_slider",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Cường độ đèn",
+        "label": "Độ sáng",
+        "tooltip": "{{value}}",
+        "group": "1dd841083e538fcb",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": true,
+        "outs": "end",
+        "topic": "light_level",
+        "topicType": "str",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "className": "",
+        "x": 800,
+        "y": 480,
+        "wires": [
+            [
+                "a2d23adf5cf8c5d0"
+            ]
+        ]
+    },
+    {
+        "id": "a2d23adf5cf8c5d0",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Lưu giá trị slider",
+        "func": "flow.set(\"brightness\", msg.payload);\nlet ledState = flow.get(\"ledState\");\nif (ledState) {\n    return msg; \n} else {\n    return null;\n}\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 420,
+        "wires": [
+            [
+                "a98926afa42343c0"
+            ]
+        ]
+    },
+    {
+        "id": "a98926afa42343c0",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Chuyển 0-100 thành 0-255",
+        "func": "if (msg._source && msg._source == \"mqtt\") {\n    return null;\n}\nlet ledState = flow.get(\"ledState\");\nif (!ledState) {\n    return null;\n}\nmsg.payload = Math.round(msg.payload * 255 / 100);\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1220,
+        "y": 500,
+        "wires": [
+            [
+                "a2e7ba188ee2c504"
+            ]
+        ]
+    },
+    {
+        "id": "a2e7ba188ee2c504",
+        "type": "mqtt out",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "topic": "/23127121/led_brightness_set",
+        "qos": "2",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "38d1a017c70ee818",
+        "x": 1390,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "40a61e15e8ab7dd5",
+        "type": "http request",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "query",
+        "url": "https://api.thingspeak.com/update?",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1170,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1d1a43dcd4f9edf8",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "23127005 - cloud led",
+        "func": "var a = (msg.payload == \"ON\") ? 1 : 0;\nmsg.payload = {\n    api_key: \"8AZJ3HOA1ZH6ITXH\",\n    field4: a\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 620,
+        "wires": [
+            [
+                "40a61e15e8ab7dd5"
+            ]
+        ]
+    },
+    {
+        "id": "6624356b64a430d4",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "23127005 - cloud relay",
+        "func": "var a = flow.get(\"water_time\");\nmsg.payload = {\n    api_key: \"8AZJ3HOA1ZH6ITXH\",\n    field5: a\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 1000,
+        "wires": [
+            [
+                "23a678f4c8876756"
+            ]
+        ]
+    },
+    {
+        "id": "23a678f4c8876756",
+        "type": "http request",
+        "z": "bbaae1db6d3d10cd",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "query",
+        "url": "https://api.thingspeak.com/update?",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 640,
+        "y": 1000,
+        "wires": [
+            []
         ]
     },
     {
@@ -2082,17 +2269,50 @@
         "name": "nodered-service-account@user-468711.iam.gserviceaccount.com"
     },
     {
+        "id": "38d1a017c70ee818",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "broker.hivemq.com",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
         "id": "11effbb23dfb879c",
         "type": "ui_tab",
         "name": "Hệ thống chăm sóc cây thông minh iTree",
-        "icon": "dashboard",
-        "order": 2
+        "icon": "fa-leaf",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
     },
     {
         "id": "5364fe89aafc73ed",
         "type": "ui_tab",
         "name": "Đăng ký",
-        "icon": "fa-user",
+        "icon": " fa-registered",
         "order": 2,
         "disabled": false,
         "hidden": false
@@ -2101,6 +2321,9 @@
         "id": "e94f883330d75ad9",
         "type": "ui_tab",
         "name": "Login",
-        "order": 1
+        "icon": "fa-sign-in",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
     }
 ]
