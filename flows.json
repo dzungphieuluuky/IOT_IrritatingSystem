@@ -410,7 +410,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Pump on message",
-        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã bật máy bơm\";\n    return msg;\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tắt máy bơm\";\n    return msg;\n}",
+        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã bật máy bơm\";\n    flow.set(\"pump_state\", true);\n    return msg;\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tắt máy bơm\";\n    flow.set(\"pump_state\", false);\n    return msg;\n}",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -650,7 +650,7 @@
         "order": 1,
         "width": 0,
         "height": 0,
-        "format": "<md-card style=\"\n  padding: 10px;\n  background-color: #f9f9f9;\n  border-left: 5px solid #4CAF50;\n  max-height: 160px;\n  overflow-y: auto;\n  box-sizing: border-box;\n\">\n  <md-card-content style=\"margin-top: -5px; padding-bottom: 20px;\">\n    <ul style=\"list-style: none; padding-left: 0; margin: 0;\">\n      <li ng-repeat=\"item in msg.payload track by $index\" style=\"padding: 8px 0; border-bottom: 1px solid #ddd;\">\n        <span style=\"font-size: 15px; font-weight: bold;\">🔔 {{item}}</span>\n      </li>\n    </ul>\n  </md-card-content>\n</md-card>\n",
+        "format": "<md-card style=\"\n  padding: 10px;\n  background-color: #f9f9f9;\n  border-left: 5px solid #4CAF50;\n  max-height: 100px;\n  overflow-y: auto;\n  box-sizing: border-box;\n\">\n  <md-card-content style=\"margin-top: -5px; padding-bottom: 20px;\">\n    <ul style=\"list-style: none; padding-left: 0; margin: 0;\">\n      <li ng-repeat=\"item in msg.payload track by $index\" style=\"padding: 8px 0; border-bottom: 1px solid #ddd;\">\n        <span style=\"font-size: 15px; font-weight: bold;\">🔔 {{item}}</span>\n      </li>\n    </ul>\n  </md-card-content>\n</md-card>\n",
         "storeOutMessages": true,
         "fwdInMessages": true,
         "resendOnRefresh": true,
@@ -726,7 +726,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Check auto water active",
-        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã tự động bật máy bơm\";\n    return msg;\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tự động tăt máy bơm\";\n    return msg;\n}\n// string bật máy bơm từ model\nelse if (msg.payload.length > 3)\n{\n    let sep_index = msg.payload.indexOf(\"_\");\n    let water_time = Number(msg.payload.substring(sep_index + 1));\n    msg.payload = \"Nhận lệnh bật máy bơm trong \" + water_time + \" giây!\";\n    return msg;\n}",
+        "func": "if (msg.payload == \"ON\")\n{\n    msg.payload = \"Đã tự động bật máy bơm\";\n    flow.set(\"pupmp_state\", true);\n    return msg;\n}\nelse if (msg.payload == \"OFF\")\n{\n    msg.payload = \"Đã tự động tăt máy bơm\";\n    flow.set(\"pump_state\", false);\n    return msg;\n}\n// string bật máy bơm từ model\nelse if (msg.payload.length > 3)\n{\n    let sep_index = msg.payload.indexOf(\"_\");\n    let water_time = Number(msg.payload.substring(sep_index + 1));\n    msg.payload = \"Nhận lệnh bật máy bơm trong \" + water_time + \" giây!\";\n    return msg;\n}",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2013,7 +2013,7 @@
         "z": "bbaae1db6d3d10cd",
         "group": "1d2eb9851173c727",
         "name": "",
-        "order": 3,
+        "order": 4,
         "width": 0,
         "height": 0,
         "format": "<style>\n    /* Style for our custom button class */\n    .custom-action-button button {\n        /* Make the button circular and remove the default border */\n        border-radius: 50% !important;\n        border: none;\n\n        /* Add depth with a shadow */\n        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);\n\n        /* Ensure smooth animations for hover/click effects */\n        transition: all 0.2s ease-in-out;\n\n        /* Make the icon larger, as there is no text */\n        font-size: 24px;\n\n        /* Override default padding to keep it circular */\n        padding: 15px !important;\n        min-width: 0;\n        min-height: 0;\n        line-height: 1;\n    }\n\n    /* --- INTERACTIVE EFFECTS --- */\n\n    /* Effect for when the mouse is hovering over the button */\n    .custom-action-button button:hover {\n        /* Make the shadow larger to 'lift' the button */\n        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);\n\n        /* Move the button up slightly */\n        transform: translateY(-2px);\n\n        /* Make the color slightly brighter */\n        filter: brightness(1.1);\n    }\n\n    /* Effect for when the button is being clicked */\n    .custom-action-button button:active {\n        /* Reduce the shadow to make it look 'pressed' */\n        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);\n\n        /* Move the button down to simulate a press */\n        transform: translateY(1px);\n\n        /* Make it slightly darker */\n        filter: brightness(0.9);\n    }\n</style>\n<style>\n/* Style for our custom button class */\n.stylish-action-button button {\n    /* Make the button circular and remove the default border */\n    border-radius: 50% !important; \n    border: none;\n    \n    /* Add depth with a shadow to make it 'pop' */\n    box-shadow: 0 4px 9px rgba(0,0,0,0.25);\n    \n    /* Ensure smooth animations for hover/click effects */\n    transition: all 0.2s ease-in-out;\n\n    /* Make the icon larger, as there is no text label */\n    font-size: 24px;\n}\n\n/* --- INTERACTIVE EFFECTS --- */\n\n/* Effect for when the mouse is hovering over the button */\n.stylish-action-button button:hover {\n    /* Make the shadow larger to 'lift' the button */\n    box-shadow: 0 7px 14px rgba(0,0,0,0.3);\n    \n    /* Move the button up slightly */\n    transform: translateY(-3px);\n    \n    /* Make the color slightly brighter */\n    filter: brightness(1.1);\n}\n\n/* Effect for when the button is being clicked */\n.stylish-action-button button:active {\n    /* Reduce the shadow to make it look 'pressed' */\n    box-shadow: 0 2px 4px rgba(0,0,0,0.2);\n\n    /* Move the button down to simulate a press */\n    transform: translateY(1px);\n\n    /* Make it slightly darker */\n    filter: brightness(0.95);\n}\n</style>",
@@ -2428,7 +2428,7 @@
         "z": "bbaae1db6d3d10cd",
         "name": "",
         "group": "c4fc82bed36ffa3d",
-        "order": 5,
+        "order": 4,
         "width": 0,
         "height": 0,
         "label": "Thời gian tưới (giây)",
@@ -2509,6 +2509,161 @@
             [
                 "dc930dafe045725e"
             ]
+        ]
+    },
+    {
+        "id": "07ae5f6b6f6c92b5",
+        "type": "ui_text_input",
+        "z": "bbaae1db6d3d10cd",
+        "name": "User Input",
+        "label": "Bạn cần giúp gì?",
+        "tooltip": "",
+        "group": "2187af5b3b019c4f",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "passthru": false,
+        "mode": "text",
+        "delay": "0",
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 140,
+        "y": 3360,
+        "wires": [
+            [
+                "60ef38146bfae789"
+            ]
+        ]
+    },
+    {
+        "id": "60ef38146bfae789",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Format Request & Clear Input",
+        "func": "const API_KEY = \"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\";\n\nconst current_state = {\n    temperature: flow.get(\"temp_sensor\") || 'N/A',\n    humidity: flow.get(\"humid_sensor\") || 'N/A',\n    light_level: flow.get(\"light_sensor\") || 'N/A',\n    pump_state: flow.get(\"pump_state\") ? \"ON\" : \"OFF\",\n    auto_water_mode: flow.get(\"autowater\") ? 'Bật' : 'Tắt'\n};\n\nconst systemPrompt = `\nBạn là một trợ lý ảo thông minh cho bảng điều khiển nhà vườn.\nVai trò của bạn là giúp người dùng hiểu dữ liệu và điều khiển hệ thống.\nHãy trả lời một cách ngắn gọn, thân thiện và sử dụng tiếng Việt.\n\nDƯỚI ĐÂY LÀ TRẠNG THÁI HỆ THỐNG HIỆN TẠI:\n- Nhiệt độ: ${current_state.temperature}°C\n- Độ ẩm: ${current_state.humidity}%\n- Cường độ ánh sáng: ${current_state.light_level} (thang đo 0-4095)\n- Trạng thái máy bơm: ${current_state.pump_state}\n- Chế độ tưới tự động: ${current_state.auto_water_mode}\n\nDựa vào dữ liệu này để trả lời câu hỏi của người dùng.\nVí dụ: nếu người dùng hỏi \"trời có nóng không?\", hãy nhìn vào nhiệt độ để trả lời.\n`;\n\nconst userInput = msg.payload;\n\nlet history = flow.get(\"chatHistory\") || [];\nhistory.push({ role: \"user\", content: userInput });\nflow.set(\"chatHistory\", history);\n\nconst apiMsg = {\n    headers: {\n        \"Content-Type\": \"application/json\",\n        \"Authorization\": \"Bearer \" + API_KEY\n    },\n    url: \"https://openrouter.ai/api/v1/chat/completions\",\n    payload: {\n        model: \"deepseek/deepseek-chat-v3-0324:free\",\n        messages: [\n            { role: \"system\", content: systemPrompt }, // Use our new dynamic prompt!\n            ...history\n        ]\n    }\n};\n\nconst clearMsg = { payload: \"\" };\n\nconst displayMsg = { history: history };\n\nreturn [apiMsg, clearMsg, displayMsg];",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 3360,
+        "wires": [
+            [
+                "4d7150519104ff08",
+                "c846a3c77a01c063"
+            ],
+            [
+                "07ae5f6b6f6c92b5"
+            ],
+            [
+                "508e46d25db5bf8c"
+            ]
+        ]
+    },
+    {
+        "id": "4d7150519104ff08",
+        "type": "http request",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Call OpenRouter API",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 690,
+        "y": 3360,
+        "wires": [
+            [
+                "68c433b0c919bf5d"
+            ]
+        ]
+    },
+    {
+        "id": "68c433b0c919bf5d",
+        "type": "function",
+        "z": "bbaae1db6d3d10cd",
+        "name": "Extract, Save & Format Reply",
+        "func": "let res;\nres = JSON.parse(msg.payload);\n\nif (!res)\n{\n    node.error(\"Failed to parse API response as JSON.\", msg);\n    let history = flow.get(\"chatHistory\") || [];\n    msg.history = [...history, { role: \"assistant\", content: \"Sorry, I received an invalid response from the server.\" }];\n    return msg;\n}\n\nif (!res || !res.choices || res.choices.length === 0) {\n    node.error(\"Invalid response from API: \" + msg.payload, msg);\n    let history = flow.get(\"chatHistory\") || [];\n    msg.history = [...history, { role: \"assistant\", content: \"Sorry, I couldn't generate a response.\" }];\n    return msg;\n}\n\nlet reply = res.choices[0].message.content;\n\nlet history = flow.get(\"chatHistory\") || [];\nhistory.push({ role: \"assistant\", content: reply });\nflow.set(\"chatHistory\", history);\n\nmsg.history = history; \n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 3360,
+        "wires": [
+            [
+                "508e46d25db5bf8c"
+            ]
+        ]
+    },
+    {
+        "id": "508e46d25db5bf8c",
+        "type": "ui_template",
+        "z": "bbaae1db6d3d10cd",
+        "group": "2187af5b3b019c4f",
+        "name": "Chat Window",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    /* ... (Your existing bubble styles are great and remain here) ... */\n    .chat-container { display: flex; flex-direction: column; gap: 10px; }\n    .message-row { display: flex; width: 100%; }\n    .message-bubble { max-width: 75%; padding: 10px 15px; border-radius: 18px; word-wrap: break-word; line-height: 1.4; }\n    .bot-row { justify-content: flex-start; }\n    .bot-bubble { background-color: #e5e5ea; color: black; border-top-left-radius: 5px; }\n    .user-row { justify-content: flex-end; }\n    .user-bubble { background-color: #007aff; color: white; border-top-right-radius: 5px; }\n    \n    /* NEW: Add some basic styling for rendered markdown elements inside the bubble */\n    .bot-bubble h1, .bot-bubble h2, .bot-bubble h3 { margin-top: 0; margin-bottom: 10px; }\n    .bot-bubble ul, .bot-bubble ol { padding-left: 20px; margin-bottom: 10px; }\n    .bot-bubble p { margin: 0 0 10px 0; }\n    .bot-bubble p:last-child { margin-bottom: 0; }\n    .bot-bubble code { background-color: #f0f0f0; padding: 2px 4px; border-radius: 4px; font-family: monospace; }\n    .bot-bubble pre { background-color: #f0f0f0; padding: 10px; border-radius: 4px; white-space: pre-wrap; }\n</style>\n\n<!-- The chat window container that will scroll -->\n<div id=\"chat-window-{{$id}}\" style=\"height:320px; overflow-y:auto; padding:10px; background-color:#f9f9f9; border-radius: 5px;\">\n  <div class=\"chat-container\">\n    <!-- Use ng-repeat to display each message -->\n    <div ng-repeat=\"m in msg.history track by $index\" class=\"message-row\" ng-class=\"{'user-row': m.role === 'user', 'bot-row': m.role === 'assistant'}\">\n        <div class=\"message-bubble\" ng-class=\"{'user-bubble': m.role === 'user', 'bot-bubble': m.role === 'assistant'}\">\n            <!-- KEY CHANGE: Use ng-bind-html to render the converted markdown -->\n            <div ng-if=\"m.role === 'user'\">{{m.content}}</div>\n            <div ng-if=\"m.role === 'assistant'\" ng-bind-html=\"renderMarkdown(m.content)\"></div>\n        </div>\n    </div>\n  </div>\n</div>\n\n<!-- Script to auto-scroll and to render markdown -->\n<script>\n    (function(scope) {\n        // This function will be available to our ng-bind-html\n        // It uses the marked() library we loaded in the <head>\n        scope.renderMarkdown = function(text) {\n            if (text) {\n                // The 'marked' function comes from the library we loaded\n                return marked.parse(text);\n            }\n            return '';\n        };\n\n        // Watch for changes in the history array to auto-scroll\n        scope.$watch('msg.history', function(newVal, oldVal) {\n            if (newVal) {\n                setTimeout(function() {\n                    var chatWindow = document.getElementById('chat-window-' + scope.$id);\n                    if (chatWindow) {\n                        chatWindow.scrollTop = chatWindow.scrollHeight;\n                    }\n                }, 50);\n            }\n        }, true);\n    })(scope);\n</script>",
+        "storeOutMessages": true,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 800,
+        "y": 3520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c846a3c77a01c063",
+        "type": "debug",
+        "z": "bbaae1db6d3d10cd",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 3280,
+        "wires": []
+    },
+    {
+        "id": "b66a65032e7eec8a",
+        "type": "ui_template",
+        "z": "bbaae1db6d3d10cd",
+        "group": "28f92c33a899de5f",
+        "name": "Load Markdown Library",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "format": "<script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "global",
+        "className": "",
+        "x": 180,
+        "y": 3460,
+        "wires": [
+            []
         ]
     },
     {
@@ -2735,6 +2890,27 @@
         "collapse": false
     },
     {
+        "id": "2187af5b3b019c4f",
+        "type": "ui_group",
+        "name": "Chatbot",
+        "tab": "11effbb23dfb879c",
+        "order": 9,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "28f92c33a899de5f",
+        "type": "ui_group",
+        "name": "OpenRouter Chat",
+        "tab": "0fd8a1799e3cbd82",
+        "order": 1,
+        "disp": true,
+        "width": "10",
+        "collapse": false
+    },
+    {
         "id": "11effbb23dfb879c",
         "type": "ui_tab",
         "name": "Hệ thống chăm sóc cây thông minh iTree",
@@ -2760,5 +2936,12 @@
         "order": 1,
         "disabled": false,
         "hidden": false
+    },
+    {
+        "id": "0fd8a1799e3cbd82",
+        "type": "ui_tab",
+        "name": "Chatbot",
+        "icon": "comment",
+        "order": 1
     }
 ]
