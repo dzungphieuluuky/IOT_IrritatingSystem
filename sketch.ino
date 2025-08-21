@@ -174,7 +174,7 @@ void callback(char* topic, byte* message, unsigned int length) {
       ledState = (currentLedBrightness > 0);
       analogWrite(led, currentLedBrightness);
       
-      lastUserSetTime = millis();
+      // lastUserSetTime = millis();
     }
   }
   // lcd temperature
@@ -318,11 +318,11 @@ void loop() {
   static unsigned long lastPublish = 0;
   if (ledState && millis() - lastPublish > 500) {
     // Nếu chưa qua 2s kể từ lúc người dùng chỉnh slider thì bỏ qua gửi giá trị từ biến trở
-    if (millis() - lastUserSetTime > 2000) {
+    // if (millis() - lastUserSetTime > 2000) {
       char brightnessMsg[10];
       sprintf(brightnessMsg, "%d", currentLedBrightness);
       mqttClient.publish("/23127121/led_brightness_status", brightnessMsg);
-    }
+    // }
     lastPublish = millis();
   }
 
