@@ -4,10 +4,10 @@ from flask import Flask, request, jsonify
 import requests
 import pickle
 
-class DecisionTreeRegressor:
+class DecisionTree:
     def __init__(self, min_samples_split=2, max_depth=100, n_features=None):
         """
-        Initializes the DecisionTreeRegressor.
+        Initializes the DecisionTree.
 
         Args:
             min_samples_split (int): The minimum number of samples required to split an internal node.
@@ -162,10 +162,10 @@ class DecisionTreeRegressor:
             return self._traverse_tree(x, node['left'])
         return self._traverse_tree(x, node['right'])
 
-class RandomForestRegressor:
+class RandomForest:
     def __init__(self, n_trees=100, min_samples_split=2, max_depth=100, n_features=None):
         """
-        Initializes the RandomForestRegressor.
+        Initializes the RandomForest.
 
         Args:
             n_trees (int): The number of trees in the forest.
@@ -189,7 +189,7 @@ class RandomForestRegressor:
         """
         self.trees = []
         for _ in range(self.n_trees):
-            tree = DecisionTreeRegressor(
+            tree = DecisionTree(
                 min_samples_split=self.min_samples_split,
                 max_depth=self.max_depth,
                 n_features=self.n_features)
@@ -290,12 +290,11 @@ def load_data_from_thingspeak():
     return df
 
 
-# ========== TRAIN MODEL ==========
 def train_model(df):
     X = df[["humid", "temp", "light"]].values
     y = df["water_time"].values
 
-    water_time_model = RandomForestRegressor(n_features=3)
+    water_time_model = RandomForest(n_features=3)
     water_time_model.fit(X, y)
     with open("water_time_model.pkl", "wb") as f:
         pickle.dump(water_time_model, f)
@@ -310,9 +309,6 @@ def predict():
                 return jsonify({"error": f"Missing {key}"}), 400
 
         input_data = np.array([[data["humid"], data["temp"], data["light"]]])
-
-        with open("water_time_model.pkl", "rb") as f:
-            water_time_model = pickle.load(f)
 
         water_time = water_time_model.predict(input_data)[0]
         water_time = int(water_time)
@@ -330,4 +326,6 @@ if __name__ == "__main__":
         data_df = generate_dummy_data()
         water_time_model = train_model(data_df)
     else:
+        with open("water_time_model.pkl", "rb") as f:
+            water_time_model = pickle.load(f)
         app.run(host="0.0.0.0", port=5000)
