@@ -34,6 +34,7 @@ const int potPin = 34;
 DHT dht(dht_pin, DHT22);
 int currentLedBrightness = 0;
 unsigned long lastUserSetTime = 0;
+int lastPotValue = 0;
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -48,7 +49,7 @@ void wifiConnect() {
 
 void mqttConnect() {
   while(!mqttClient.connected()) {
-    Serial.println("Attemping MQTT connection...");
+    Serial.println("Attempting MQTT connection...");
     String clientId = "ESP32Client-" + String(random(0xffff), HEX);
     if(mqttClient.connect(clientId.c_str())) {
       Serial.println("connected");
@@ -93,8 +94,13 @@ void callback(char* topic, byte* message, unsigned int length) {
 
     // gửi thông báo trạng thái đèn lên mqtt
     char led_state_message[] = "False";
+    currentLedBrightness = 0;
     if (ledState == true)
+    {
       strcpy(led_state_message, "True");
+      currentLedBrightness = 255;
+    }
+    analogWrite(led, currentLedBrightness);
     mqttClient.publish("/23127003/led_wokwi", led_state_message);
   }
 
@@ -143,13 +149,33 @@ void callback(char* topic, byte* message, unsigned int length) {
       digitalWrite(led2, LOW);
     }
   }
+  // else if (topic_string == "/23127121/led_brightness_set") {
+  //   int brightness = msg.toInt();
+  //   brightness = constrain(brightness, 0, 255);
+  //   currentLedBrightness = brightness;
+  //   ledState = (brightness > 0);
+  //   analogWrite(led, brightness);
+  //   lastUserSetTime = millis();
+  // }
   else if (topic_string == "/23127121/led_brightness_set") {
-    int brightness = msg.toInt();
-    brightness = constrain(brightness, 0, 255);
-    currentLedBrightness = brightness;
-    ledState = (brightness > 0);
-    analogWrite(led, brightness);
-    lastUserSetTime = millis();
+    String payload = msg;
+    bool isValidNumber = true;
+    for (unsigned int i = 0; i < payload.length(); i++) {
+      if (!isDigit(payload.charAt(i))) {
+        isValidNumber = false;
+        break;
+      }
+    }
+
+    if (isValidNumber && payload.length() > 0) {
+      int brightness = payload.toInt();
+      brightness = constrain(brightness, 0, 255);
+      currentLedBrightness = brightness;
+      ledState = (currentLedBrightness > 0);
+      analogWrite(led, currentLedBrightness);
+      
+      lastUserSetTime = millis();
+    }
   }
   // lcd temperature
   else if(topic_string == "/23127005/lcd_temperature")
@@ -194,6 +220,8 @@ void setup() {
   lcd.print("Nhiet do: ");
   lcd.setCursor(0, 1);
   lcd.print("Do am: ");
+
+  digitalWrite(pump, LOW);
 }
 
 
@@ -249,6 +277,7 @@ void loop() {
   }
   lastButtonState = buttonState;
 
+  // check hết thời gian tưới nước
   if (millis() >= end_water and end_water > 0)
   {
     digitalWrite(pump, LOW);
@@ -271,22 +300,27 @@ void loop() {
 
   // Đọc biến trở điều chỉnh độ sáng
   int potValue = analogRead(potPin);
-  int brightness = map(potValue, 0, 4095, 0, 255);
-  // Cập nhật LED nếu đèn đang bật
-  if (ledState) {
-    analogWrite(led, brightness);
-    currentLedBrightness = brightness;
-  } else {
-    analogWrite(led, 0);
-    currentLedBrightness = 0;
+  if (potValue != lastPotValue)
+  {
+    int brightness = map(potValue, 0, 4095, 0, 255);
+    // Cập nhật LED nếu đèn đang bật
+    if (ledState) {
+      analogWrite(led, brightness);
+      currentLedBrightness = brightness;
+    } else {
+      analogWrite(led, 0);
+      currentLedBrightness = 0;
+    }
   }
+  lastPotValue = potValue;
+
   // Gửi trạng thái độ sáng biến trở lên Web mỗi 500ms
   static unsigned long lastPublish = 0;
   if (ledState && millis() - lastPublish > 500) {
     // Nếu chưa qua 2s kể từ lúc người dùng chỉnh slider thì bỏ qua gửi giá trị từ biến trở
     if (millis() - lastUserSetTime > 2000) {
       char brightnessMsg[10];
-      sprintf(brightnessMsg, "%d", brightness);
+      sprintf(brightnessMsg, "%d", currentLedBrightness);
       mqttClient.publish("/23127121/led_brightness_status", brightnessMsg);
     }
     lastPublish = millis();
@@ -294,5 +328,5 @@ void loop() {
 
   //lcd
 
-  // delay(500);
+  delay(500);
 }
