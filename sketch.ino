@@ -202,11 +202,6 @@ void setup() {
   Serial.begin(9600);
   Serial.print("Connecting to WiFi");
 
-  wifiConnect();
-  mqttClient.setServer(mqttServer, port);
-  mqttClient.setCallback(callback);
-  mqttClient.setKeepAlive( 90 );
-
   pinMode(button, INPUT);
   pinMode(LDR, INPUT);
   pinMode(led, OUTPUT);
@@ -222,6 +217,12 @@ void setup() {
   lcd.print("Do am: ");
 
   digitalWrite(pump, LOW);
+
+  wifiConnect();
+  mqttClient.setServer(mqttServer, port);
+  mqttClient.setCallback(callback);
+  mqttClient.setKeepAlive( 90 );
+
 }
 
 
@@ -328,5 +329,5 @@ void loop() {
 
   //lcd
 
-  delay(500);
+  // delay(500);
 }
