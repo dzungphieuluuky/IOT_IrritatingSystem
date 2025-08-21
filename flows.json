@@ -487,15 +487,15 @@
         "id": "994d3136548e11c9",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
-        "name": "Command dạng string",
-        "func": "let water_time = msg.payload.water_time;\nmsg.payload = \"ON\" + \"_\" + String(water_time);\nreturn msg;",
+        "name": "Tạo command gửi cho ESP32 ",
+        "func": "let water_time = msg.payload.water_time;\nmsg.payload = \"ON\" + \"_\" + String(water_time);\n\n// giới hạn trong vòng 5 phút không tưới nữa\nlet lastAutoWaterTime = flow.get(\"lastAutoWaterTime\");\nlet now = new Date().getTime();\nlet minutesBetweenWater = 5;\n\nif (lastAutoWaterTime && (now - lastAutoWaterTime) < (minutesBetweenWater * 60 * 1000))\n    return null;\n\nlet autowater = flow.get(\"autowater\");\nif (autowater == true)\n{\n    flow.set(\"lastAutoWaterTime\", now);\n    return msg;\n}",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 840,
+        "x": 870,
         "y": 1880,
         "wires": [
             [
@@ -515,7 +515,8 @@
         "y": 1880,
         "wires": [
             [
-                "994d3136548e11c9"
+                "994d3136548e11c9",
+                "f26c7eb136da3bd4"
             ]
         ]
     },
@@ -533,7 +534,7 @@
         "correl": "",
         "expiry": "",
         "broker": "8195d7a4b94bdd16",
-        "x": 1080,
+        "x": 1140,
         "y": 1880,
         "wires": []
     },
@@ -650,7 +651,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Tạo request",
-        "func": "let humid_data = flow.get(\"humid_sensor\");\nlet temp_data = flow.get(\"temp_sensor\");\nlet light_data = flow.get(\"light_sensor\");\n\nmsg.payload = {\n    humid: humid_data,\n    temp: temp_data,\n    light: light_data\n};\n\n// giới hạn trong vòng 5 phút không tưới nữa\nlet lastAutoWaterTime = flow.get(\"lastAutoWaterTime\");\nlet now = new Date().getTime();\n\nif (lastAutoWaterTime && (now - lastAutoWaterTime) < (5 * 60 * 1000))\n    return null;\n\nlet autowater = flow.get(\"autowater\");\nif (autowater == true)\n{\n    flow.set(\"lastAutoWaterTime\", now);\n    return msg;\n}",
+        "func": "let humid_data = flow.get(\"humid_sensor\");\nlet temp_data = flow.get(\"temp_sensor\");\nlet light_data = flow.get(\"light_sensor\");\n\nmsg.payload = {\n    humid: humid_data,\n    temp: temp_data,\n    light: light_data\n};\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2481,7 +2482,7 @@
         "id": "07ae5f6b6f6c92b5",
         "type": "ui_text_input",
         "z": "bbaae1db6d3d10cd",
-        "name": "User Input",
+        "name": "user input",
         "label": "Bạn cần giúp gì?",
         "tooltip": "",
         "group": "2187af5b3b019c4f",
@@ -2495,7 +2496,7 @@
         "sendOnBlur": false,
         "className": "",
         "topicType": "str",
-        "x": 140,
+        "x": 130,
         "y": 3360,
         "wires": [
             [
@@ -2507,8 +2508,8 @@
         "id": "60ef38146bfae789",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
-        "name": "Format Request & Clear Input",
-        "func": "const api_key = \"\";\n\nconst current_state = {\n    temperature: flow.get(\"temp_sensor\") || 'N/A',\n    humidity: flow.get(\"humid_sensor\") || 'N/A',\n    light_level: flow.get(\"light_sensor\") || 'N/A',\n    pump_state: flow.get(\"pump_state\") ? \"ON\" : \"OFF\",\n    auto_water_mode: flow.get(\"autowater\") ? 'Bật' : 'Tắt'\n};\n\nconst systemPrompt = `\nBạn là một trợ lý ảo thông minh cho bảng điều khiển cho hệ thống chăm sóc cây thông minh iTree.\nVai trò của bạn là giúp người dùng hiểu dữ liệu và điều khiển hệ thống.\nHãy trả lời một cách ngắn gọn, thân thiện và sử dụng tiếng Việt.\n\nDƯỚI ĐÂY LÀ TRẠNG THÁI HỆ THỐNG HIỆN TẠI:\n- Nhiệt độ: ${current_state.temperature}°C\n- Độ ẩm: ${current_state.humidity}%\n- Cường độ ánh sáng: ${current_state.light_level} (thang đo 0-4095)\n- Trạng thái máy bơm: ${current_state.pump_state}\n- Chế độ tưới tự động: ${current_state.auto_water_mode}\nDựa vào dữ liệu này để trả lời câu hỏi của người dùng.\nVí dụ: nếu người dùng hỏi \"trời có nóng không?\", hãy nhìn vào nhiệt độ để trả lời.\nNgười dùng có thể xem dữ liệu nhiệt độ, độ ẩm và cường độ ánh sáng trên các biểu đồ Gauge.\nNgười dùng có thể tuỳ chỉnh thời gian tưới nước thủ công và máy bơm sẽ tự động tắt sau khi hết thời gian, hoặc bật chế độ tự động để hệ thống tự tưới với thời gian phù hợp.\nDữ liệu về nhiệt độ, độ ẩm, ánh sáng và thời gian tưới trong quá khứ được thể hiện các biểu đồ đường.\nTrang web có thể gửi thông báo nhanh thông qua PushSafer và gửi Email cho người dùng thông qua địa email đã đăng nhập.\nSau khi web thực hiện lệnh, sẽ có thông báo xuất hiện ở ô thông báo.\nNgười dùng có thể bật/tắt đèn thủ công hoặc bật chế độ tự động bật đèn theo độ sáng môi trường.\nĐộ sáng và trạng thái đèn được hiển thị ở ô chiếu sáng.\n`;\n\nconst userInput = msg.payload;\n\nlet history = flow.get(\"chatHistory\") || [];\nhistory.push({ role: \"user\", content: userInput });\nflow.set(\"chatHistory\", history);\n\nconst apiMsg = {\n    headers: {\n        \"Content-Type\": \"application/json\",\n        \"Authorization\": \"Bearer \" + api_key\n    },\n    url: \"https://openrouter.ai/api/v1/chat/completions\",\n    payload: {\n        model: \"deepseek/deepseek-r1-0528:free\",\n        messages: [\n            { role: \"system\", content: systemPrompt }, // Use our new dynamic prompt!\n            ...history\n        ]\n    }\n};\n\nconst clearMsg = { payload: \"\" };\n\nconst displayMsg = { history: history };\n\nreturn [apiMsg, clearMsg, displayMsg];",
+        "name": "Định dạng request và clear input ",
+        "func": "const api_key = \"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\";\n\nconst current_state = {\n    temperature: flow.get(\"temp_sensor\") || 'N/A',\n    humidity: flow.get(\"humid_sensor\") || 'N/A',\n    light_level: flow.get(\"light_sensor\") || 'N/A',\n    pump_state: flow.get(\"pump_state\") ? \"ON\" : \"OFF\",\n    auto_water_mode: flow.get(\"autowater\") ? 'Bật' : 'Tắt'\n};\n\nconst systemPrompt = `\nBạn là một trợ lý ảo thông minh cho bảng điều khiển cho hệ thống chăm sóc cây thông minh iTree.\nVai trò của bạn là giúp người dùng hiểu dữ liệu và điều khiển hệ thống.\nHãy trả lời một cách ngắn gọn, thân thiện và sử dụng tiếng Việt.\n\nDƯỚI ĐÂY LÀ TRẠNG THÁI HỆ THỐNG HIỆN TẠI:\n- Nhiệt độ: ${current_state.temperature}°C\n- Độ ẩm: ${current_state.humidity}%\n- Cường độ ánh sáng: ${current_state.light_level} (thang đo 0-4095)\n- Trạng thái máy bơm: ${current_state.pump_state}\n- Chế độ tưới tự động: ${current_state.auto_water_mode}\nDựa vào dữ liệu này để trả lời câu hỏi của người dùng.\nVí dụ: nếu người dùng hỏi \"trời có nóng không?\", hãy nhìn vào nhiệt độ để trả lời.\nNgười dùng có thể xem dữ liệu nhiệt độ, độ ẩm và cường độ ánh sáng trên các biểu đồ Gauge.\nNgười dùng có thể tuỳ chỉnh thời gian tưới nước thủ công và máy bơm sẽ tự động tắt sau khi hết thời gian, hoặc bật chế độ tự động để hệ thống tự tưới với thời gian phù hợp.\nDữ liệu về nhiệt độ, độ ẩm, ánh sáng và thời gian tưới trong quá khứ được thể hiện các biểu đồ đường.\nTrang web có thể gửi thông báo nhanh thông qua PushSafer và gửi Email cho người dùng thông qua địa email đã đăng nhập.\nSau khi web thực hiện lệnh, sẽ có thông báo xuất hiện ở ô thông báo.\nNgười dùng có thể bật/tắt đèn thủ công hoặc bật chế độ tự động bật đèn theo độ sáng môi trường.\nĐộ sáng và trạng thái đèn được hiển thị ở ô chiếu sáng.\nBạn không thể điều khiển hệ thống, chỉ cần cung cấp câu trả lời hoặc gợi ý cho người dùng.\n`;\n\nconst userInput = msg.payload;\n\nlet history = flow.get(\"chatHistory\") || [];\nhistory.push({ role: \"user\", content: userInput });\nflow.set(\"chatHistory\", history);\n\nconst apiMsg = {\n    headers: {\n        \"Content-Type\": \"application/json\",\n        \"Authorization\": \"Bearer \" + api_key\n    },\n    url: \"https://openrouter.ai/api/v1/chat/completions\",\n    payload: {\n        model: \"deepseek/deepseek-r1-0528:free\",\n        messages: [\n            { role: \"system\", content: systemPrompt }, // Use our new dynamic prompt!\n            ...history\n        ]\n    }\n};\n\nconst clearMsg = { payload: \"\" };\n\nconst displayMsg = { history: history };\n\nreturn [apiMsg, clearMsg, displayMsg];",
         "outputs": 3,
         "timeout": "",
         "noerr": 0,
@@ -2534,7 +2535,7 @@
         "id": "4d7150519104ff08",
         "type": "http request",
         "z": "bbaae1db6d3d10cd",
-        "name": "Call OpenRouter API",
+        "name": "gọi OpenRouter API",
         "method": "POST",
         "ret": "txt",
         "paytoqs": "ignore",
@@ -2559,7 +2560,7 @@
         "id": "68c433b0c919bf5d",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
-        "name": "Extract, Save & Format Reply",
+        "name": "lưu và định dạng lại response",
         "func": "let res;\nres = JSON.parse(msg.payload);\n\nif (!res)\n{\n    node.error(\"Failed to parse API response as JSON.\", msg);\n    let history = flow.get(\"chatHistory\") || [];\n    msg.history = [...history, { role: \"assistant\", content: \"Sorry, I received an invalid response from the server.\" }];\n    return msg;\n}\n\nif (!res || !res.choices || res.choices.length === 0) {\n    node.error(\"Invalid response from API: \" + msg.payload, msg);\n    let history = flow.get(\"chatHistory\") || [];\n    msg.history = [...history, { role: \"assistant\", content: \"Sorry, I couldn't generate a response.\" }];\n    return msg;\n}\n\nlet reply = res.choices[0].message.content;\n\nlet history = flow.get(\"chatHistory\") || [];\nhistory.push({ role: \"assistant\", content: reply });\nflow.set(\"chatHistory\", history);\n\nmsg.history = history; \n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
@@ -2678,6 +2679,23 @@
         "statusType": "auto",
         "x": 990,
         "y": 3280,
+        "wires": []
+    },
+    {
+        "id": "f26c7eb136da3bd4",
+        "type": "debug",
+        "z": "bbaae1db6d3d10cd",
+        "name": "debug autowater from server",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 1820,
         "wires": []
     },
     {
