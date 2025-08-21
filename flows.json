@@ -13,7 +13,7 @@
         "name": "Bật/tắt gửi email",
         "label": "Gửi thông báo qua Email",
         "tooltip": "",
-        "group": "5ee574f87092e9d2",
+        "group": "1dd841083e538fcb",
         "order": 2,
         "width": 6,
         "height": 1,
@@ -78,7 +78,7 @@
         "type": "ui_button",
         "z": "bbaae1db6d3d10cd",
         "name": "Bật/Tắt đèn",
-        "group": "1dd841083e538fcb",
+        "group": "5ee574f87092e9d2",
         "order": 3,
         "width": 6,
         "height": 1,
@@ -106,7 +106,7 @@
         "id": "eb618a0e705e2c44",
         "type": "ui_text",
         "z": "bbaae1db6d3d10cd",
-        "group": "1dd841083e538fcb",
+        "group": "5ee574f87092e9d2",
         "order": 2,
         "width": 6,
         "height": 1,
@@ -119,50 +119,16 @@
         "font": "",
         "fontSize": "",
         "color": "#000000",
-        "x": 980,
+        "x": 1120,
         "y": 560,
         "wires": []
-    },
-    {
-        "id": "a62a97d91a2eed51",
-        "type": "ui_form",
-        "z": "bbaae1db6d3d10cd",
-        "name": "Chọn ngày truy vấn",
-        "label": "Chọn ngày xem dữ liệu",
-        "group": "134e30c886f77fdc",
-        "order": 1,
-        "width": 6,
-        "height": 1,
-        "options": [
-            {
-                "label": "Ngày",
-                "value": "date",
-                "type": "date",
-                "required": false,
-                "rows": null
-            }
-        ],
-        "formValue": {
-            "date": ""
-        },
-        "submit": "Xem dữ liệu",
-        "cancel": "",
-        "topic": "history_query",
-        "topicType": "str",
-        "splitLayout": false,
-        "className": "",
-        "x": 770,
-        "y": 380,
-        "wires": [
-            []
-        ]
     },
     {
         "id": "651326fd9d312a66",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Thay đổi bật/tắt đèn",
-        "func": "let ledState = flow.get(\"ledState\");\nif (msg.payload == \"toggle\")\n    ledState = !ledState;\nflow.set(\"ledState\", ledState);\n\nif (ledState == true)\n    msg.payload = \"Bật đèn từ Dashboard\";\nelse\n    msg.payload = \"Tắt đèn từ Dashboard\";\nreturn msg;",
+        "func": "if (msg.payload == \"toggle\")\n{\n    let ledState = flow.get(\"ledState\");\n\n    // lúc này chưa chuyển ledstate do chưa nhận xác nhận từ mạch\n    if (ledState == false)\n        msg.payload = \"Bật đèn từ Dashboard\";\n    else\n        msg.payload = \"Tắt đèn từ Dashboard\";\n    return msg;\n}",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -173,7 +139,6 @@
         "y": 540,
         "wires": [
             [
-                "a0fd103ddf409c74",
                 "6dfeb6e8db219bbe"
             ]
         ]
@@ -239,7 +204,7 @@
         "id": "b4d2a783e827315f",
         "type": "function",
         "z": "bbaae1db6d3d10cd",
-        "name": "Đổi true/false",
+        "name": "Xác nhận đã bật/tắt đèn",
         "func": "if (msg.payload === \"True\")\n{\n    msg.payload = \"Đã bật đèn\";\n    flow.set(\"ledState\", true);\n}\nelse \n{\n    msg.payload = \"Đã tắt đèn\";\n    flow.set(\"ledState\", false);\n}\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
@@ -247,7 +212,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 350,
+        "x": 390,
         "y": 680,
         "wires": [
             [
@@ -261,7 +226,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Bật/tắt => 0/100",
-        "func": "let ledState = flow.get(\"ledState\");\nif (ledState == true)\n    msg.payload = 100;\nelse\n    msg.payload = 0;\nreturn msg;",
+        "func": "let ledState = flow.get(\"ledState\");\nif (ledState === true)\n    msg.payload = 100;\nelse\n    msg.payload = 0;\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -316,7 +281,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 810,
+        "x": 950,
         "y": 600,
         "wires": [
             [
@@ -482,7 +447,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Kiểm tra nhiệt vượt ngưỡng",
-        "func": "let temp = Number(msg.payload);\nlet upper = 40;\nlet lower = 10;\nlet sendEmail = flow.get(\"sendEmail\");\n\n// giới hạn không gửi quá 1 email trong 5 phút\nlet lastEmailTime = flow.get(\"temp_email\");\nlet now = new Date().getTime();\n\nif (lastEmailTime && (now - lastEmailTime) < (5 * 60 * 1000))\n    return null;\n    \nif (sendEmail === true && (temp < lower || temp > upper))\n{\n    msg.topic = \"Cảnh báo! Nhiệt độ ngoài khoảng an toàn!\";\n    msg.payload = \"Nhiệt độ hiện tại đang nằm ngoài ngưỡng cho phép: \" + temp + \"°C\";\n    msg.to = flow.get(\"userEmail\");\n    flow.set(\"temp_email\", now);\n    return msg;\n}\nreturn null;",
+        "func": "let temp = Number(msg.payload);\nlet upper = 40;\nlet lower = 10;\nlet sendEmail = flow.get(\"sendEmail\");\n\n// giới hạn không gửi quá 1 email trong 5 phút\nlet lastEmailTime = flow.get(\"temp_email\");\nlet now = new Date().getTime();\nlet minutesBetweenSend = 0.5;\n\nif (lastEmailTime && (now - lastEmailTime) < (minutesBetweenSend * 60 * 1000))\n    return null;\n    \nif (sendEmail === true && (temp < lower || temp > upper))\n{\n    msg.topic = \"Cảnh báo! Nhiệt độ ngoài khoảng an toàn!\";\n    msg.payload = \"Nhiệt độ hiện tại đang nằm ngoài ngưỡng cho phép: \" + temp + \"°C\";\n    msg.to = flow.get(\"userEmail\");\n    flow.set(\"temp_email\", now);\n    return msg;\n}\nreturn null;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -503,7 +468,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Kiểm tra độ ẩm ngoài ngưỡng",
-        "func": "let humid = Number(msg.payload);\nlet upper = 100;\nlet lower = 10;\nlet sendEmail = flow.get(\"sendEmail\");\n\n// giới hạn không gửi quá 1 email trong 5 phút\nlet lastEmailTime = flow.get(\"humid_email\");\nlet now = new Date().getTime();\n\nif (lastEmailTime && (now - lastEmailTime) < (5 * 60 * 1000))\n    return null;\n    \nif (sendEmail === true && (humid < lower)) \n{\n    msg.topic = \"Cảnh báo! Độ ẩm dưới ngưỡng an toàn\";\n    msg.payload = \"Độ ẩm hiện tại đang nằm dưới ngưỡng cho phép: \" + humid + \"%\";\n    msg.to = flow.get(\"userEmail\");\n    flow.set(\"humid_email\", now);\n    return msg;\n}\nreturn null;",
+        "func": "let humid = Number(msg.payload);\nlet upper = 100;\nlet lower = 21.5;\nlet sendEmail = flow.get(\"sendEmail\");\n\n// giới hạn không gửi quá 1 email trong 5 phút\nlet lastEmailTime = flow.get(\"humid_email\");\nlet now = new Date().getTime();\nlet minutesBetweenSend = 0.5;\n\nif (lastEmailTime && (now - lastEmailTime) < (minutesBetweenSend * 60 * 1000))\n    return null;\n    \nif (sendEmail === true && (humid < lower)) \n{\n    msg.topic = \"Cảnh báo! Độ ẩm dưới ngưỡng an toàn\";\n    msg.payload = \"Độ ẩm hiện tại đang nằm dưới ngưỡng cho phép: \" + humid + \"%\";\n    msg.to = flow.get(\"userEmail\");\n    flow.set(\"humid_email\", now);\n    return msg;\n}\nreturn null;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -645,7 +610,7 @@
         "id": "ede157d4f7aee52c",
         "type": "ui_template",
         "z": "bbaae1db6d3d10cd",
-        "group": "5ee574f87092e9d2",
+        "group": "1dd841083e538fcb",
         "name": "Thông báo/cảnh báo",
         "order": 1,
         "width": 6,
@@ -1177,7 +1142,7 @@
         "name": "",
         "apikey": "480c36acb2027573",
         "notificationtemplate": "7555681997bf6580",
-        "x": 950,
+        "x": 940,
         "y": 1940,
         "wires": [
             [],
@@ -1845,7 +1810,7 @@
         "name": "Cường độ đèn",
         "label": "Độ sáng",
         "tooltip": "{{value}}",
-        "group": "1dd841083e538fcb",
+        "group": "5ee574f87092e9d2",
         "order": 1,
         "width": 6,
         "height": 1,
@@ -1861,7 +1826,8 @@
         "y": 480,
         "wires": [
             [
-                "a2d23adf5cf8c5d0"
+                "a2d23adf5cf8c5d0",
+                "4adb3517ada067ed"
             ]
         ]
     },
@@ -1870,7 +1836,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Lưu giá trị slider",
-        "func": "flow.set(\"brightness\", msg.payload);\nlet ledState = flow.get(\"ledState\");\nif (ledState) {\n    return msg; \n} else {\n    return null;\n}\n",
+        "func": "flow.set(\"brightness\", msg.payload);\nif (msg.payload > 0)\n    flow.set(\"ledState\", true)\n    \nlet ledState = flow.get(\"ledState\");\nif (ledState) {\n    return msg; \n} else {\n    return null;\n}\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1939,7 +1905,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1170,
+        "x": 1230,
         "y": 700,
         "wires": [
             []
@@ -1957,7 +1923,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1020,
+        "x": 1160,
         "y": 620,
         "wires": [
             [
@@ -2526,7 +2492,7 @@
         "mode": "text",
         "delay": "0",
         "topic": "",
-        "sendOnBlur": true,
+        "sendOnBlur": false,
         "className": "",
         "topicType": "str",
         "x": 140,
@@ -2542,7 +2508,7 @@
         "type": "function",
         "z": "bbaae1db6d3d10cd",
         "name": "Format Request & Clear Input",
-        "func": "const panda = \"\";\n\nconst current_state = {\n    temperature: flow.get(\"temp_sensor\") || 'N/A',\n    humidity: flow.get(\"humid_sensor\") || 'N/A',\n    light_level: flow.get(\"light_sensor\") || 'N/A',\n    pump_state: flow.get(\"pump_state\") ? \"ON\" : \"OFF\",\n    auto_water_mode: flow.get(\"autowater\") ? 'Bật' : 'Tắt'\n};\n\nconst systemPrompt = `\nBạn là một trợ lý ảo thông minh cho bảng điều khiển cho hệ thống chăm sóc cây thông minh iTree.\nVai trò của bạn là giúp người dùng hiểu dữ liệu và điều khiển hệ thống.\nHãy trả lời một cách ngắn gọn, thân thiện và sử dụng tiếng Việt.\n\nDƯỚI ĐÂY LÀ TRẠNG THÁI HỆ THỐNG HIỆN TẠI:\n- Nhiệt độ: ${current_state.temperature}°C\n- Độ ẩm: ${current_state.humidity}%\n- Cường độ ánh sáng: ${current_state.light_level} (thang đo 0-4095)\n- Trạng thái máy bơm: ${current_state.pump_state}\n- Chế độ tưới tự động: ${current_state.auto_water_mode}\nDựa vào dữ liệu này để trả lời câu hỏi của người dùng.\nVí dụ: nếu người dùng hỏi \"trời có nóng không?\", hãy nhìn vào nhiệt độ để trả lời.\nNgười dùng có thể xem dữ liệu nhiệt độ, độ ẩm và cường độ ánh sáng trên các biểu đồ Gauge.\nNgười dùng có thể tuỳ chỉnh thời gian tưới nước thủ công và máy bơm sẽ tự động tắt sau khi hết thời gian, hoặc bật chế độ tự động để hệ thống tự tưới với thời gian phù hợp.\nDữ liệu về nhiệt độ, độ ẩm, ánh sáng và thời gian tưới trong quá khứ được thể hiện các biểu đồ đường.\nTrang web có thể gửi thông báo nhanh thông qua PushSafer và gửi Email cho người dùng thông qua địa email đã đăng nhập.\nSau khi web thực hiện lệnh, sẽ có thông báo xuất hiện ở ô thông báo.\nNgười dùng có thể bật/tắt đèn thủ công hoặc bật chế độ tự động bật đèn theo độ sáng môi trường.\nĐộ sáng và trạng thái đèn được hiển thị ở ô chiếu sáng.\n`;\n\nconst userInput = msg.payload;\n\nlet history = flow.get(\"chatHistory\") || [];\nhistory.push({ role: \"user\", content: userInput });\nflow.set(\"chatHistory\", history);\n\nconst apiMsg = {\n    headers: {\n        \"Content-Type\": \"application/json\",\n        \"Authorization\": \"Bearer \" + panda\n    },\n    url: \"https://openrouter.ai/api/v1/chat/completions\",\n    payload: {\n        model: \"deepseek/deepseek-chat-v3-0324:free\",\n        messages: [\n            { role: \"system\", content: systemPrompt }, // Use our new dynamic prompt!\n            ...history\n        ]\n    }\n};\n\nconst clearMsg = { payload: \"\" };\n\nconst displayMsg = { history: history };\n\nreturn [apiMsg, clearMsg, displayMsg];",
+        "func": "const api_key = \"\";\n\nconst current_state = {\n    temperature: flow.get(\"temp_sensor\") || 'N/A',\n    humidity: flow.get(\"humid_sensor\") || 'N/A',\n    light_level: flow.get(\"light_sensor\") || 'N/A',\n    pump_state: flow.get(\"pump_state\") ? \"ON\" : \"OFF\",\n    auto_water_mode: flow.get(\"autowater\") ? 'Bật' : 'Tắt'\n};\n\nconst systemPrompt = `\nBạn là một trợ lý ảo thông minh cho bảng điều khiển cho hệ thống chăm sóc cây thông minh iTree.\nVai trò của bạn là giúp người dùng hiểu dữ liệu và điều khiển hệ thống.\nHãy trả lời một cách ngắn gọn, thân thiện và sử dụng tiếng Việt.\n\nDƯỚI ĐÂY LÀ TRẠNG THÁI HỆ THỐNG HIỆN TẠI:\n- Nhiệt độ: ${current_state.temperature}°C\n- Độ ẩm: ${current_state.humidity}%\n- Cường độ ánh sáng: ${current_state.light_level} (thang đo 0-4095)\n- Trạng thái máy bơm: ${current_state.pump_state}\n- Chế độ tưới tự động: ${current_state.auto_water_mode}\nDựa vào dữ liệu này để trả lời câu hỏi của người dùng.\nVí dụ: nếu người dùng hỏi \"trời có nóng không?\", hãy nhìn vào nhiệt độ để trả lời.\nNgười dùng có thể xem dữ liệu nhiệt độ, độ ẩm và cường độ ánh sáng trên các biểu đồ Gauge.\nNgười dùng có thể tuỳ chỉnh thời gian tưới nước thủ công và máy bơm sẽ tự động tắt sau khi hết thời gian, hoặc bật chế độ tự động để hệ thống tự tưới với thời gian phù hợp.\nDữ liệu về nhiệt độ, độ ẩm, ánh sáng và thời gian tưới trong quá khứ được thể hiện các biểu đồ đường.\nTrang web có thể gửi thông báo nhanh thông qua PushSafer và gửi Email cho người dùng thông qua địa email đã đăng nhập.\nSau khi web thực hiện lệnh, sẽ có thông báo xuất hiện ở ô thông báo.\nNgười dùng có thể bật/tắt đèn thủ công hoặc bật chế độ tự động bật đèn theo độ sáng môi trường.\nĐộ sáng và trạng thái đèn được hiển thị ở ô chiếu sáng.\n`;\n\nconst userInput = msg.payload;\n\nlet history = flow.get(\"chatHistory\") || [];\nhistory.push({ role: \"user\", content: userInput });\nflow.set(\"chatHistory\", history);\n\nconst apiMsg = {\n    headers: {\n        \"Content-Type\": \"application/json\",\n        \"Authorization\": \"Bearer \" + api_key\n    },\n    url: \"https://openrouter.ai/api/v1/chat/completions\",\n    payload: {\n        model: \"deepseek/deepseek-r1-0528:free\",\n        messages: [\n            { role: \"system\", content: systemPrompt }, // Use our new dynamic prompt!\n            ...history\n        ]\n    }\n};\n\nconst clearMsg = { payload: \"\" };\n\nconst displayMsg = { history: history };\n\nreturn [apiMsg, clearMsg, displayMsg];",
         "outputs": 3,
         "timeout": "",
         "noerr": 0,
@@ -2634,15 +2600,16 @@
         "id": "c846a3c77a01c063",
         "type": "debug",
         "z": "bbaae1db6d3d10cd",
-        "name": "debug 4",
+        "name": "debug request gửi api",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 670,
+        "x": 710,
         "y": 3280,
         "wires": []
     },
@@ -2700,24 +2667,25 @@
         "id": "8f70a146a1b7f5e3",
         "type": "debug",
         "z": "bbaae1db6d3d10cd",
-        "name": "debug 2",
+        "name": "debug resposne chatbot",
         "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 900,
+        "x": 990,
         "y": 3280,
         "wires": []
     },
     {
-        "id": "5ee574f87092e9d2",
+        "id": "1dd841083e538fcb",
         "type": "ui_group",
         "name": "Thông báo",
         "tab": "11effbb23dfb879c",
-        "order": 8,
+        "order": 4,
         "disp": true,
         "width": 6,
         "collapse": false,
@@ -2735,24 +2703,15 @@
         "className": ""
     },
     {
-        "id": "1dd841083e538fcb",
+        "id": "5ee574f87092e9d2",
         "type": "ui_group",
         "name": "Chiếu sáng",
         "tab": "11effbb23dfb879c",
-        "order": 4,
+        "order": 8,
         "disp": true,
         "width": 6,
-        "collapse": false
-    },
-    {
-        "id": "134e30c886f77fdc",
-        "type": "ui_group",
-        "name": "Truy vấn lịch sử",
-        "tab": "11effbb23dfb879c",
-        "order": 6,
-        "disp": true,
-        "width": "6",
-        "collapse": false
+        "collapse": false,
+        "className": ""
     },
     {
         "id": "8195d7a4b94bdd16",
